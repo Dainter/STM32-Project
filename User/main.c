@@ -19,15 +19,23 @@
 #include "SysTick\bsp_SysTick.h"
 #include "Led\bsp_led.h"
 #include "usart\bsp_usart1.h"
+#include "spi_flash\bsp_spi_flash.h"
 
-// 挨踢员
 
-/*
- * t : 定时时间 
- * Ticks : 多少个时钟周期产生一次中断 
- * f : 时钟频率 72000000
- * t = Ticks * 1/f = (72000000/100000) * (1/72000000) = 10us 
- */ 
+#define TxBufferSize1   (countof(TxBuffer1) - 1)
+#define RxBufferSize1   (countof(TxBuffer1) - 1)
+#define countof(a)      (sizeof(a) / sizeof(*(a)))
+#define  BufferSize (countof(Tx_Buffer)-1)
+
+#define  FLASH_WriteAddress     0x00000
+#define  FLASH_ReadAddress      FLASH_WriteAddress
+#define  FLASH_SectorToErase    FLASH_WriteAddress
+
+     
+
+uint8_t Tx_Buffer[] = "Dainter von Preussen, King of Preusia, Emporer of the Deutschland Reich.";
+uint8_t Rx_Buffer[BufferSize];
+
 
 /**
   * @brief  主函数
@@ -36,6 +44,7 @@
   */
 int main(void)
 {	
+    uint32_t flash_id;
 	/* LED 端口初始化 */
 	LED_GPIO_Config();
 
@@ -45,21 +54,29 @@ int main(void)
 	USARTx_Config();
 	printf("\r\n 这是一个串口中断接收回显实验 \r\n");	
 	printf("\r\n 请在超级终端或者串口调试助手输入字符 \r\n");	
-  
+    SPI_FLASH_Init();
+    
+    flash_id = SPI_FLASH_ReadManufacturerID();
+    printf("\r\n Manufacturer id = %d \r\n", flash_id);	
+    flash_id = SPI_FLASH_ReadDeviceID();
+    printf("\r\n device id = %d \r\n", flash_id);	
+    
+    /* Erase SPI FLASH Sector to write on */
+    SPI_FLASH_SectorErase(FLASH_SectorToErase);	 	 
+			
+    SPI_FLASH_BufferWrite(Tx_Buffer, FLASH_WriteAddress, BufferSize);
+    printf("\r\n Tx_Buffer:%s \r\t", Tx_Buffer);
+		
+
+	SPI_FLASH_BufferRead(Rx_Buffer, FLASH_ReadAddress, BufferSize);
+	printf("\r\n Rx_Buffer:%s \r\n", Rx_Buffer);
 	for(;;)
 	{
 
-		LED1( ON ); 
-		Delay_ms(500);
-		LED1( OFF );
+		//LED1( ON ); 
+		//Delay_ms(500);
+		//LED1( OFF );
 
-		LED2( ON );
-		Delay_ms(500);
-		LED2( OFF );
-
-		LED3( ON );
-		Delay_ms(500);
-		LED3( OFF );	
 
 	}     
 	
