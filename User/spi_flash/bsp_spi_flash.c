@@ -44,6 +44,115 @@
 
 #define Dummy_Byte                0xFF
 
+static volatile DSTATUS FATFS_FLASH_SPI_Stat = STA_NOINIT;	/* Physical drive status */
+
+//    /*************************   flash 文件系统   *********************************************/
+//	res_flash = f_mount(&fs,"0:",1);
+//	printf("\r\n f_mount res_flash=%d \r\n",res_flash);
+//	
+//	//如果没有文件系统就格式化创建创建文件系统
+//	if(res_flash ==FR_NO_FILESYSTEM)
+//	{
+//		res_flash=f_mkfs("0:",0,4096);							//格式化
+//		printf("\r\nmkfs res_flash=%d",res_flash);
+//		res_flash = f_mount(&fs,"0:",0);						//格式化后，先取消挂载
+//		res_flash = f_mount(&fs,"0:",1);						//重新挂载
+//	}
+    /**************************  flash   *****************************************/
+//  //文件系统测试，写测试
+//  //打开文件，如果文件不参加则创建它
+//	res_flash = f_open(&fnew, "0:newfile.txt", FA_CREATE_ALWAYS | FA_WRITE );
+//	 
+//	if ( res_flash == FR_OK )
+//	{
+//		LED3_ON;
+//		res_flash = f_write(&fnew, Tx_Buffer, sizeof(Tx_Buffer), &bw);
+//		f_close(&fnew);      
+//	}
+//    printf("\r\n delete file: ");
+//    res_flash = f_unlink("0:newfile.txt");
+
+//	//读测试
+//	res_flash = f_open(&fnew, "0:newfile.txt", FA_OPEN_EXISTING | FA_READ);
+//    printf("\r\n Read file: %d", res_flash);
+//    if ( res_flash == FR_OK )
+//    {
+//        res_flash = f_read(&fnew, Rx_Buffer, sizeof(Rx_Buffer), &br); 
+//        printf("\r\n Rx_Buffer: %s ", Rx_Buffer);
+//    }    
+//	/* Close open files */
+//	res_flash = f_close(&fnew);	
+//	//不再使用文件系统，取消挂载文件系统
+//	res_flash = f_mount(&fs,"0:",0);
+
+DSTATUS FATFS_FLASH_SPI_disk_initialize(void)
+{
+    SPI_FLASH_Init();
+    if(sFLASH_ID == SPI_FLASH_ReadID())			/*检测FLASH是否正常工作*/
+	{
+		return FATFS_FLASH_SPI_Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT flag */
+	}else
+	{
+		return FATFS_FLASH_SPI_Stat |= STA_NOINIT;
+	}
+}
+
+DSTATUS FATFS_FLASH_SPI_disk_status(void)
+{
+
+	if(sFLASH_ID == SPI_FLASH_ReadID())			/*检测FLASH是否正常工作*/
+	{
+		return FATFS_FLASH_SPI_Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT flag */
+	}else
+	{
+		return FATFS_FLASH_SPI_Stat |= STA_NOINIT;
+	}
+}
+
+DRESULT FATFS_FLASH_SPI_disk_ioctl(BYTE cmd, char *buff)
+{
+    switch (cmd) 
+	{
+		case GET_SECTOR_SIZE :     // Get R/W sector size (WORD)
+			*(WORD * )buff = 4096;		//flash最小写单元为页，256字节，此处取2页为一个读写单位
+		break;
+		case GET_BLOCK_SIZE :      // Get erase block size in unit of sector (DWORD)
+			*(DWORD * )buff = 1;		//flash以4k为最小擦除单位
+		break;
+		case GET_SECTOR_COUNT:
+			*(DWORD * )buff = 1536;		//sector数量
+		break;
+		case CTRL_SYNC :
+		break;
+		default:break;
+	}
+
+	return RES_OK;
+}
+
+DRESULT FATFS_FLASH_SPI_disk_read(BYTE *buff, DWORD sector, UINT count)
+{
+    if ((FATFS_FLASH_SPI_Stat & STA_NOINIT)) {
+		return RES_NOTRDY;
+	}
+	sector+=512;//扇区偏移，外部Flash文件系统空间放在外部Flash后面6M空间
+	SPI_FLASH_BufferRead(buff, sector << 12, count<<12);
+
+	return RES_OK;
+}
+
+DRESULT FATFS_FLASH_SPI_disk_write(BYTE *buff, DWORD sector, UINT count)
+{
+    uint32_t write_addr;  
+
+	sector+=512;//扇区偏移，外部Flash文件系统空间放在外部Flash后面6M空间
+	write_addr = sector<<12;    
+	SPI_FLASH_SectorErase(write_addr);
+	SPI_FLASH_BufferWrite(buff,write_addr,4096);
+	return RES_OK;
+}
+
+
 /*******************************************************************************
 * Function Name  : SPI_FLASH_Init
 * Description    : Initializes the peripherals used by the SPI FLASH driver.

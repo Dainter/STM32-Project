@@ -4,6 +4,11 @@
 
 
 #include "stm32f10x.h"
+#include "diskio.h"
+
+//#define  sFLASH_ID              0xEF3015     //W25X16
+//#define  sFLASH_ID              0xEF4015	 //W25Q16
+#define  sFLASH_ID              0XEF4017    //W25Q64
 
 
 
@@ -38,7 +43,11 @@
 #define      macSPI_FLASH_CS_ENABLE()                       GPIO_ResetBits( macSPI_CS_PORT, macSPI_CS_PIN )
 #define      macSPI_FLASH_CS_DISABLE()                      GPIO_SetBits( macSPI_CS_PORT, macSPI_CS_PIN )
 
-
+DSTATUS FATFS_FLASH_SPI_disk_initialize(void);
+DSTATUS FATFS_FLASH_SPI_disk_status(void) ;
+DRESULT FATFS_FLASH_SPI_disk_ioctl(BYTE cmd, char *buff) ;
+DRESULT FATFS_FLASH_SPI_disk_read(BYTE *buff, DWORD sector, UINT count) ;
+DRESULT FATFS_FLASH_SPI_disk_write(BYTE *buff, DWORD sector, UINT count) ;
 
 void SPI_FLASH_Init(void);
 void SPI_FLASH_SectorErase(u32 SectorAddr);
