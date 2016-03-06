@@ -46,6 +46,14 @@
 
 static volatile DSTATUS FATFS_FLASH_SPI_Stat = STA_NOINIT;	/* Physical drive status */
 
+//FIL fnew;								/* file objects */
+//FATFS fs;								/* Work area (file system object) for logical drives */
+//FRESULT res_flash; 
+//UINT br, bw;            					/* File R/W count */
+//uint8_t Tx_Buffer[] = "Dainter von Preussen, King of Preusia, Emporer of the Deutschland Reich.";
+//uint8_t Rx_Buffer[1024]={0};       		  /* file copy buffer */
+
+
 //    /*************************   flash 文件系统   *********************************************/
 //	res_flash = f_mount(&fs,"0:",1);
 //	printf("\r\n f_mount res_flash=%d \r\n",res_flash);

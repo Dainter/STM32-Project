@@ -31,8 +31,7 @@ void SysTick_Init(void)
 	 * SystemFrequency / 100000	 10us中断一次
 	 * SystemFrequency / 1000000 1us中断一次
 	 */
-//	if (SysTick_Config(SystemFrequency / 100000))	// ST3.0.0库版本
-	if (SysTick_Config(SystemCoreClock / 100000))	// ST3.5.0库版本
+	if (SysTick_Config(SystemCoreClock / 1000000))	// ST3.5.0库版本
 	{ 
 		/* Capture error */ 
 		while (1);
@@ -47,7 +46,7 @@ void SysTick_Init(void)
   *		@arg nTime: Delay_us( 1 ) 则实现的延时为 1 * 10us = 10us
   * @retval  无
   */
-void Delay_10us(__IO u32 nTime)
+void SysTick_Delay_us(__IO u32 nTime)
 { 
 	TimingDelay = nTime;	
 
@@ -56,6 +55,12 @@ void Delay_10us(__IO u32 nTime)
 
 	while(TimingDelay != 0);
 }
+
+void SysTick_Delay_ms(__IO u32 nTime)
+{
+    SysTick_Delay_us(1000*nTime);
+}
+
 
 /**
   * @brief  获取节拍程序

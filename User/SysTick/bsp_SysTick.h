@@ -4,7 +4,7 @@
 #include "stm32f10x.h"
 
 void SysTick_Init(void);
-void Delay_10us(__IO u32 nTime);
-#define Delay_ms(x) Delay_10us(100*x)	 //µ¥Î»ms
+void SysTick_Delay_us(__IO u32 nTime);
+void SysTick_Delay_ms(__IO u32 nTime);
 
 #endif /* __SYSTICK_H */

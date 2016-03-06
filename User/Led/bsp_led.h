@@ -19,13 +19,6 @@
 #define macLED3_GPIO_PIN		  GPIO_Pin_8			          /* 连接到SCL时钟线的GPIO */
 
 
-/** the macro definition to trigger the led on or off 
-  * 1 - off
-  *0 - on
-  */
-#define ON  0
-#define OFF 1
-
 /* 带参宏，可以像内联函数一样使用 */
 #define LED1(a)	if (a)	\
 					GPIO_SetBits(macLED1_GPIO_PORT,macLED1_GPIO_PIN);\
