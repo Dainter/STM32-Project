@@ -13,7 +13,8 @@ extern uint16   remote_port;                                  /* 远端端口号     
 extern uint16   local_port;                                   /* 定义本地端口                 */
 extern uint8    use_dhcp;                                   /* 是否使用DHCP获取IP           */
 extern uint8    use_eeprom;                                   /* 是否使用EEPROM中的IP配置信息 */
-
+extern uint8        dhcp_ok;                                                                                /*DHCP获取成功*/
+extern uint32       dhcp_time;                                                                      /*DHCP运行计数*/
 /*
  * 通过宏定义选择目标开发板
  * STM32F103ZET6 -> 秉火ISO-V3开发板
@@ -82,6 +83,8 @@ typedef struct _CONFIG_MSG
 
 /*MCU配置相关函数*/
 void gpio_for_w5500_config(void);                                                       /*SPI接口reset 及中断引脚*/
+void timer2_init(void);                                                                         /*STM32定时器2初始化*/
+void timer2_isr(void);                                                                          /*定时器中断执行的函数*/
 
 /*W5500SPI相关函数*/
 void IINCHIP_WRITE( uint32 addrbsb,  uint8 data);                       /*写入一个8位数据到W5500*/
@@ -93,6 +96,8 @@ uint16 wiz_read_buf(uint32 addrbsb, uint8* buf,uint16 len); /*从W5500读出len字节
 void reset_w5500(void);                                                                         /*硬复位W5500*/
 void set_w5500_mac(void);                                                                       /*配置W5500的MAC地址*/
 void set_w5500_ip(void);                                                                        /*配置W5500的IP地址*/
+/*需要用定时的的应用函数*/
+void dhcp_timer_init(void);                                                                 /*dhcp用到的定时器初始化*/
 
 
 #endif

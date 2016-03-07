@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "w5500_conf.h"
-//#include "bsp_i2c_ee.h"
+#include "bsp_TiMbase.h" 
 #include "bsp_spi_flash.h"
 #include "utility.h"
 #include "w5500.h"
@@ -24,19 +24,19 @@ CONFIG_MSG  ConfigMsg;                                                          
 uint8 mac[6]={0x00,0x08,0xdc,0x11,0x11,0x11};
 
 /*定义默认IP信息*/
-uint8 local_ip[4]  ={192,168,0,88};                                         /*定义W5500默认IP地址*/
+uint8 local_ip[4]  ={192,168,1,88};                                         /*定义W5500默认IP地址*/
 uint8 subnet[4]    ={255,255,255,0};                                        /*定义W5500默认子网掩码*/
-uint8 gateway[4]   ={192,168,0,133};                                          /*定义W5500默认网关*/
+uint8 gateway[4]   ={192,168,1,1};                                          /*定义W5500默认网关*/
 uint8 dns_server[4]={114,114,114,114};                                  /*定义W5500默认DNS*/
 
 uint16 local_port = 5000;                                         /*定义本地端口*/
 
 /*定义远端IP信息*/
-uint8  remote_ip[4]={192,168,0,133};                                            /*远端IP地址*/
+uint8  remote_ip[4]={192,168,1,102};                                            /*远端IP地址*/
 uint16 remote_port = 5000;                                                                /*远端端口号*/
 
 /*IP配置方法选择，请自行选择*/
-uint8   ip_from = IP_FROM_DEFINE;             
+uint8   ip_from;            
 
 uint8   dhcp_ok   = 0;                                                              /*dhcp成功获取IP*/
 uint32  ms        = 0;                                                              /*毫秒计数*/
@@ -62,6 +62,24 @@ void set_w5500_ip(void)
         printf(" 使用定义的IP信息配置W5500\r\n");
     }
     
+    /*使用DHCP获取IP参数，需调用DHCP子函数*/        
+    if(ip_from==IP_FROM_DHCP)                               
+    {
+        /*复制DHCP获取的配置信息到配置结构体*/
+        if(dhcp_ok==1)
+        {
+            printf(" IP from DHCP\r\n");         
+            memcpy(ConfigMsg.lip,DHCP_GET.lip, 4);
+            memcpy(ConfigMsg.sub,DHCP_GET.sub, 4);
+            memcpy(ConfigMsg.gw,DHCP_GET.gw, 4);
+            memcpy(ConfigMsg.dns,DHCP_GET.dns,4);
+        }
+        else
+        {
+            printf(" DHCP子程序未运行,或者不成功\r\n");
+            printf(" 使用定义的IP信息配置W5500\r\n");
+        }
+    }
     
     /*以下配置信息，根据需要选用*/  
     ConfigMsg.sw_ver[0]=FW_VER_HIGH;
@@ -319,4 +337,44 @@ uint16 wiz_read_buf(uint32 addrbsb, uint8* buf,uint16 len)
   return len;
 }
 
+
+/**
+*@brief     STM32定时器2初始化
+*@param     无
+*@return    无
+*/
+void timer2_init(void)
+{
+    TIM2_Configuration();                                                                       /* TIM2 定时配置 */
+    TIM2_NVIC_Configuration();                                                          /* 定时器的中断优先级 */
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 , ENABLE);       /* TIM2 重新开时钟，开始计时 */
+}
+
+/**
+*@brief     dhcp用到的定时器初始化
+*@param     无
+*@return    无
+*/
+void dhcp_timer_init(void)
+{
+    timer2_init();                                                                  
+}
+
+/**
+*@brief     定时器2中断函数
+*@param     无
+*@return    无
+*/
+void timer2_isr(void)
+{
+    ms++;   
+    if(ms>=1000)
+    {  
+        ms=0;
+        dhcp_time++;                                                                                    /*DHCP定时加1S*/
+//#ifndef __NTP_H__
+        ntptimer++;                                                                                     /*NTP重试时间加1S*/
+//#endif
+    }
+}
 

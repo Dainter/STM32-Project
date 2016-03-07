@@ -23,6 +23,7 @@
 #include "ff.h"
 #include "w5500_conf.h"
 #include "ping.h"
+#include "dhcp.h"
 
 
 /**
@@ -46,11 +47,17 @@ int main(void)
     reset_w5500();                                          /*硬复位W5500*/
     printf("\r\n Reset_w5500_ok \r\n");
     set_w5500_mac();                                        /*配置MAC地址*/
-    set_w5500_ip();                                         /*配置IP地址*/
-    printf("\r\n Network_ok \r\n");
+    //ip_from = IP_FROM_DEFINE;
+    //set_w5500_ip();                                         /*配置IP地址*/
+    //printf("\r\n Network_ok \r\n");
     socket_buf_init(txsize, rxsize);        /*初始化8个Socket的发送接收缓存大小*/
     printf("\r\n Socket_ok \r\n");
+    while(dhcp_ok != 1)
+    {
+        do_dhcp();
+    }
     do_ping();
+    printf("\r\n Ping Test \r\n");
     while(1)
     {
         LED2_TOGGLE;

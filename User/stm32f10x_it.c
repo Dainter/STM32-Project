@@ -26,9 +26,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include <stdio.h>
-#include "usart\bsp_usart1.h"
+#include "bsp_usart1.h"
+#include "bsp_SysTick.h"
+#include "w5500_conf.h"
 
-extern void TimingDelay_Decrement(void);
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -144,6 +145,14 @@ void SysTick_Handler(void)
 }
 
 
+void TIM2_IRQHandler(void)
+{
+    if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
+    {   
+        timer2_isr();
+        TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);           
+    }           
+}
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
@@ -157,7 +166,7 @@ void macUSART_INT_FUN(void)
     if(USART_GetITStatus(macUSARTx, USART_IT_RXNE) != RESET)
     {   
         //ch = USART1->DR;
-            ch = USART_ReceiveData(macUSARTx);
+        ch = USART_ReceiveData(macUSARTx);
         printf( "%c", ch );    //将接受到的数据直接返回打印
     } 
      

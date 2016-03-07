@@ -40,7 +40,7 @@ uint32  next_dhcp_time  = 0;                                            /*DHCP超
 uint32  dhcp_tick_cnt   = 0;                      
 uint8       DHCP_timer;
 
-uint8 Conflict_flag = 0;
+uint8 Conflict_flag = 1;
 uint32  DHCP_XID        = DEFAULT_XID;              
 uint8 EXTERN_DHCPBUF[1024];
 RIP_MSG*  pRIPMSG = (RIP_MSG*)EXTERN_DHCPBUF;           /*DHCP消息指针*/
@@ -783,11 +783,12 @@ void do_dhcp(void)
     if(Conflict_flag == 1)
     {
         init_dhcp_client();                                    /*初始化DHCP客户端*/ 
+        printf("\r\n init_dhcp_client OK \r\n");
         Conflict_flag =0;
     }
     
     dhcpret = check_DHCP_state(SOCK_DHCP);             /*获取DHCP服务状态*/
-    
+    printf("\r\n check_DHCP_state = %d \r\n", dhcpret);
     switch(dhcpret)
     {
         case DHCP_RET_NONE:                              /*IP地址获取不成功*/ 
@@ -804,9 +805,9 @@ void do_dhcp(void)
         
         case DHCP_RET_CONFLICT:                          /*IP地址获取冲突*/ 
             printf(" 从DHCP获取IP地址失败\r\n");
-      dhcp_state = STATE_DHCP_READY; 
-      printf(" 重试中\r\n");
-      dhcp_ok=0; 
+            dhcp_state = STATE_DHCP_READY; 
+            printf(" 重试中\r\n");
+            dhcp_ok=0; 
             break;     
 
         default:
