@@ -23,141 +23,141 @@
 #define SPI_FLASH_PerWritePageSize      256
 
 /* Private define ------------------------------------------------------------*/
-#define W25X_WriteEnable		      0x06 
-#define W25X_WriteDisable		      0x04 
-#define W25X_ReadStatusReg		    0x05 
-#define W25X_WriteStatusReg		    0x01 
-#define W25X_ReadData			        0x03 
-#define W25X_FastReadData		      0x0B 
-#define W25X_FastReadDual		      0x3B 
-#define W25X_PageProgram		      0x02 
-#define W25X_BlockErase			      0xD8 
-#define W25X_SectorErase		      0x20 
-#define W25X_ChipErase			      0xC7 
-#define W25X_PowerDown			      0xB9 
-#define W25X_ReleasePowerDown	    0xAB 
-#define W25X_DeviceID			        0xAB 
-#define W25X_ManufactDeviceID   	0x90 
-#define W25X_JedecDeviceID		    0x9F 
+#define W25X_WriteEnable              0x06 
+#define W25X_WriteDisable             0x04 
+#define W25X_ReadStatusReg          0x05 
+#define W25X_WriteStatusReg         0x01 
+#define W25X_ReadData                   0x03 
+#define W25X_FastReadData             0x0B 
+#define W25X_FastReadDual             0x3B 
+#define W25X_PageProgram              0x02 
+#define W25X_BlockErase               0xD8 
+#define W25X_SectorErase              0x20 
+#define W25X_ChipErase                0xC7 
+#define W25X_PowerDown                0xB9 
+#define W25X_ReleasePowerDown       0xAB 
+#define W25X_DeviceID                   0xAB 
+#define W25X_ManufactDeviceID       0x90 
+#define W25X_JedecDeviceID          0x9F 
 
 #define WIP_Flag                  0x01  /* Write In Progress (WIP) flag */
 
 #define Dummy_Byte                0xFF
 
-static volatile DSTATUS FATFS_FLASH_SPI_Stat = STA_NOINIT;	/* Physical drive status */
+static volatile DSTATUS FATFS_FLASH_SPI_Stat = STA_NOINIT;  /* Physical drive status */
 
-//FIL fnew;								/* file objects */
-//FATFS fs;								/* Work area (file system object) for logical drives */
+//FIL fnew;                             /* file objects */
+//FATFS fs;                             /* Work area (file system object) for logical drives */
 //FRESULT res_flash; 
-//UINT br, bw;            					/* File R/W count */
+//UINT br, bw;                              /* File R/W count */
 //uint8_t Tx_Buffer[] = "Dainter von Preussen, King of Preusia, Emporer of the Deutschland Reich.";
-//uint8_t Rx_Buffer[1024]={0};       		  /* file copy buffer */
+//uint8_t Rx_Buffer[1024]={0};                /* file copy buffer */
 
 
 //    /*************************   flash 文件系统   *********************************************/
-//	res_flash = f_mount(&fs,"0:",1);
-//	printf("\r\n f_mount res_flash=%d \r\n",res_flash);
-//	
-//	//如果没有文件系统就格式化创建创建文件系统
-//	if(res_flash ==FR_NO_FILESYSTEM)
-//	{
-//		res_flash=f_mkfs("0:",0,4096);							//格式化
-//		printf("\r\nmkfs res_flash=%d",res_flash);
-//		res_flash = f_mount(&fs,"0:",0);						//格式化后，先取消挂载
-//		res_flash = f_mount(&fs,"0:",1);						//重新挂载
-//	}
+//  res_flash = f_mount(&fs,"0:",1);
+//  printf("\r\n f_mount res_flash=%d \r\n",res_flash);
+//  
+//  //如果没有文件系统就格式化创建创建文件系统
+//  if(res_flash ==FR_NO_FILESYSTEM)
+//  {
+//      res_flash=f_mkfs("0:",0,4096);                          //格式化
+//      printf("\r\nmkfs res_flash=%d",res_flash);
+//      res_flash = f_mount(&fs,"0:",0);                        //格式化后，先取消挂载
+//      res_flash = f_mount(&fs,"0:",1);                        //重新挂载
+//  }
     /**************************  flash   *****************************************/
 //  //文件系统测试，写测试
 //  //打开文件，如果文件不参加则创建它
-//	res_flash = f_open(&fnew, "0:newfile.txt", FA_CREATE_ALWAYS | FA_WRITE );
-//	 
-//	if ( res_flash == FR_OK )
-//	{
-//		LED3_ON;
-//		res_flash = f_write(&fnew, Tx_Buffer, sizeof(Tx_Buffer), &bw);
-//		f_close(&fnew);      
-//	}
+//  res_flash = f_open(&fnew, "0:newfile.txt", FA_CREATE_ALWAYS | FA_WRITE );
+//   
+//  if ( res_flash == FR_OK )
+//  {
+//      LED3_ON;
+//      res_flash = f_write(&fnew, Tx_Buffer, sizeof(Tx_Buffer), &bw);
+//      f_close(&fnew);      
+//  }
 //    printf("\r\n delete file: ");
 //    res_flash = f_unlink("0:newfile.txt");
 
-//	//读测试
-//	res_flash = f_open(&fnew, "0:newfile.txt", FA_OPEN_EXISTING | FA_READ);
+//  //读测试
+//  res_flash = f_open(&fnew, "0:newfile.txt", FA_OPEN_EXISTING | FA_READ);
 //    printf("\r\n Read file: %d", res_flash);
 //    if ( res_flash == FR_OK )
 //    {
 //        res_flash = f_read(&fnew, Rx_Buffer, sizeof(Rx_Buffer), &br); 
 //        printf("\r\n Rx_Buffer: %s ", Rx_Buffer);
 //    }    
-//	/* Close open files */
-//	res_flash = f_close(&fnew);	
-//	//不再使用文件系统，取消挂载文件系统
-//	res_flash = f_mount(&fs,"0:",0);
+//  /* Close open files */
+//  res_flash = f_close(&fnew); 
+//  //不再使用文件系统，取消挂载文件系统
+//  res_flash = f_mount(&fs,"0:",0);
 
 DSTATUS FATFS_FLASH_SPI_disk_initialize(void)
 {
     SPI_FLASH_Init();
-    if(sFLASH_ID == SPI_FLASH_ReadID())			/*检测FLASH是否正常工作*/
-	{
-		return FATFS_FLASH_SPI_Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT flag */
-	}else
-	{
-		return FATFS_FLASH_SPI_Stat |= STA_NOINIT;
-	}
+    if(sFLASH_ID == SPI_FLASH_ReadID())         /*检测FLASH是否正常工作*/
+    {
+        return FATFS_FLASH_SPI_Stat &= ~STA_NOINIT; /* Clear STA_NOINIT flag */
+    }else
+    {
+        return FATFS_FLASH_SPI_Stat |= STA_NOINIT;
+    }
 }
 
 DSTATUS FATFS_FLASH_SPI_disk_status(void)
 {
 
-	if(sFLASH_ID == SPI_FLASH_ReadID())			/*检测FLASH是否正常工作*/
-	{
-		return FATFS_FLASH_SPI_Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT flag */
-	}else
-	{
-		return FATFS_FLASH_SPI_Stat |= STA_NOINIT;
-	}
+    if(sFLASH_ID == SPI_FLASH_ReadID())         /*检测FLASH是否正常工作*/
+    {
+        return FATFS_FLASH_SPI_Stat &= ~STA_NOINIT; /* Clear STA_NOINIT flag */
+    }else
+    {
+        return FATFS_FLASH_SPI_Stat |= STA_NOINIT;
+    }
 }
 
 DRESULT FATFS_FLASH_SPI_disk_ioctl(BYTE cmd, char *buff)
 {
     switch (cmd) 
-	{
-		case GET_SECTOR_SIZE :     // Get R/W sector size (WORD)
-			*(WORD * )buff = 4096;		//flash最小写单元为页，256字节，此处取2页为一个读写单位
-		break;
-		case GET_BLOCK_SIZE :      // Get erase block size in unit of sector (DWORD)
-			*(DWORD * )buff = 1;		//flash以4k为最小擦除单位
-		break;
-		case GET_SECTOR_COUNT:
-			*(DWORD * )buff = 1536;		//sector数量
-		break;
-		case CTRL_SYNC :
-		break;
-		default:break;
-	}
+    {
+        case GET_SECTOR_SIZE :     // Get R/W sector size (WORD)
+            *(WORD * )buff = 4096;      //flash最小写单元为页，256字节，此处取2页为一个读写单位
+        break;
+        case GET_BLOCK_SIZE :      // Get erase block size in unit of sector (DWORD)
+            *(DWORD * )buff = 1;        //flash以4k为最小擦除单位
+        break;
+        case GET_SECTOR_COUNT:
+            *(DWORD * )buff = 1536;     //sector数量
+        break;
+        case CTRL_SYNC :
+        break;
+        default:break;
+    }
 
-	return RES_OK;
+    return RES_OK;
 }
 
 DRESULT FATFS_FLASH_SPI_disk_read(BYTE *buff, DWORD sector, UINT count)
 {
     if ((FATFS_FLASH_SPI_Stat & STA_NOINIT)) {
-		return RES_NOTRDY;
-	}
-	sector+=512;//扇区偏移，外部Flash文件系统空间放在外部Flash后面6M空间
-	SPI_FLASH_BufferRead(buff, sector << 12, count<<12);
+        return RES_NOTRDY;
+    }
+    sector+=512;//扇区偏移，外部Flash文件系统空间放在外部Flash后面6M空间
+    SPI_FLASH_BufferRead(buff, sector << 12, count<<12);
 
-	return RES_OK;
+    return RES_OK;
 }
 
 DRESULT FATFS_FLASH_SPI_disk_write(BYTE *buff, DWORD sector, UINT count)
 {
     uint32_t write_addr;  
 
-	sector+=512;//扇区偏移，外部Flash文件系统空间放在外部Flash后面6M空间
-	write_addr = sector<<12;    
-	SPI_FLASH_SectorErase(write_addr);
-	SPI_FLASH_BufferWrite(buff,write_addr,4096);
-	return RES_OK;
+    sector+=512;//扇区偏移，外部Flash文件系统空间放在外部Flash后面6M空间
+    write_addr = sector<<12;    
+    SPI_FLASH_SectorErase(write_addr);
+    SPI_FLASH_BufferWrite(buff,write_addr,4096);
+    return RES_OK;
 }
 
 
@@ -172,35 +172,35 @@ void SPI_FLASH_Init(void)
 {
   SPI_InitTypeDef  SPI_InitStructure;
   GPIO_InitTypeDef GPIO_InitStructure;
-	
+    
   
   /* Enable SPI1 and GPIO clocks */
   /*!< SPI_FLASH_SPI_CS_GPIO, SPI_FLASH_SPI_MOSI_GPIO, 
        SPI_FLASH_SPI_MISO_GPIO, SPI_FLASH_SPI_DETECT_GPIO 
        and SPI_FLASH_SPI_SCK_GPIO Periph clock enable */
   /*!< SPI_FLASH_SPI Periph clock enable */
-	macSPI_APBxClock_FUN ( macSPI_CLK, ENABLE );
+    macSPI_APBxClock_FUN ( macSPI_CLK, ENABLE );
  
   /*!< Configure SPI_FLASH_SPI_CS_PIN pin: SPI_FLASH Card CS pin */
-	macSPI_CS_APBxClock_FUN ( macSPI_CS_CLK, ENABLE );
+    macSPI_CS_APBxClock_FUN ( macSPI_CS_CLK, ENABLE );
   GPIO_InitStructure.GPIO_Pin = macSPI_CS_PIN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_Init(macSPI_CS_PORT, &GPIO_InitStructure);
-	
+    
   /*!< Configure SPI_FLASH_SPI pins: SCK */
-	macSPI_SCK_APBxClock_FUN ( macSPI_SCK_CLK, ENABLE );
+    macSPI_SCK_APBxClock_FUN ( macSPI_SCK_CLK, ENABLE );
   GPIO_InitStructure.GPIO_Pin = macSPI_SCK_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_Init(macSPI_SCK_PORT, &GPIO_InitStructure);
 
   /*!< Configure SPI_FLASH_SPI pins: MISO */
-	macSPI_MISO_APBxClock_FUN ( macSPI_MISO_CLK, ENABLE );
+    macSPI_MISO_APBxClock_FUN ( macSPI_MISO_CLK, ENABLE );
   GPIO_InitStructure.GPIO_Pin = macSPI_MISO_PIN;
   GPIO_Init(macSPI_MISO_PORT, &GPIO_InitStructure);
 
   /*!< Configure SPI_FLASH_SPI pins: MOSI */
-	macSPI_MOSI_APBxClock_FUN ( macSPI_MOSI_CLK, ENABLE );
+    macSPI_MOSI_APBxClock_FUN ( macSPI_MOSI_CLK, ENABLE );
   GPIO_InitStructure.GPIO_Pin = macSPI_MOSI_PIN;
   GPIO_Init(macSPI_MOSI_PORT, &GPIO_InitStructure);
 
@@ -223,7 +223,7 @@ void SPI_FLASH_Init(void)
 
   /* Enable SPI1  */
   SPI_Cmd(macSPIx , ENABLE);
-	
+    
 }
 /*******************************************************************************
 * Function Name  : SPI_FLASH_SectorErase
@@ -413,38 +413,38 @@ void SPI_FLASH_BufferWrite(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 //void SPI_FLASH_BufferWrite(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 //{
 //  u8 NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, i;
-//	u32 CurrentAddr;
+//  u32 CurrentAddr;
 
-//	
-//	CurrentAddr = WriteAddr;
-//	
+//  
+//  CurrentAddr = WriteAddr;
+//  
 //  Addr = WriteAddr % SPI_FLASH_PageSize;
 //  count = SPI_FLASH_PageSize - Addr;
-//	
-//	NumOfPage = ( NumByteToWrite - count ) / SPI_FLASH_PageSize;
-//	NumOfSingle = ( NumByteToWrite - count ) % SPI_FLASH_PageSize;
-//	
+//  
+//  NumOfPage = ( NumByteToWrite - count ) / SPI_FLASH_PageSize;
+//  NumOfSingle = ( NumByteToWrite - count ) % SPI_FLASH_PageSize;
+//  
 
-//	if ( count )
-//	{
-//		SPI_FLASH_PageWrite ( pBuffer, CurrentAddr, count );
-//		
-//		CurrentAddr += count;
-//		pBuffer += count;
-//		
-//	}
-//	
-//	for ( i = 0; i < NumOfPage; i ++ )
-//	{
-//		SPI_FLASH_PageWrite ( pBuffer, CurrentAddr, SPI_FLASH_PageSize );
-//		
-//		CurrentAddr += SPI_FLASH_PageSize;
-//		pBuffer += SPI_FLASH_PageSize;
-//		
-//	}
-//	
-//	if ( NumOfSingle )
-//		SPI_FLASH_PageWrite ( pBuffer, CurrentAddr, NumOfSingle );
+//  if ( count )
+//  {
+//      SPI_FLASH_PageWrite ( pBuffer, CurrentAddr, count );
+//      
+//      CurrentAddr += count;
+//      pBuffer += count;
+//      
+//  }
+//  
+//  for ( i = 0; i < NumOfPage; i ++ )
+//  {
+//      SPI_FLASH_PageWrite ( pBuffer, CurrentAddr, SPI_FLASH_PageSize );
+//      
+//      CurrentAddr += SPI_FLASH_PageSize;
+//      pBuffer += SPI_FLASH_PageSize;
+//      
+//  }
+//  
+//  if ( NumOfSingle )
+//      SPI_FLASH_PageWrite ( pBuffer, CurrentAddr, NumOfSingle );
 
 //}
 
@@ -708,7 +708,7 @@ void SPI_FLASH_WaitForWriteEnd(void)
   {
     /* Send a dummy byte to generate the clock needed by the FLASH
     and put the value of the status register in FLASH_Status variable */
-    FLASH_Status = SPI_FLASH_SendByte(Dummy_Byte);	 
+    FLASH_Status = SPI_FLASH_SendByte(Dummy_Byte);   
   }
   while ((FLASH_Status & WIP_Flag) == SET); /* Write in progress */
 

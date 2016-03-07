@@ -31,32 +31,32 @@
   * @retval 无
   */
 int main(void)
-{	
-	/* LED 端口初始化 */
-	LED_GPIO_Config();
+{   
+    /* LED 端口初始化 */
+    LED_GPIO_Config();
 
-	/* 配置SysTick 为10us中断一次 */
-	SysTick_Init();
-	/* USART1 配置模式为 115200 8-N-1，中断接收 */
-	USARTx_Config();
-	printf("\r\n usart_ok \r\n");	
+    /* 配置SysTick 为10us中断一次 */
+    SysTick_Init();
+    /* USART1 配置模式为 115200 8-N-1，中断接收 */
+    USARTx_Config();
+    printf("\r\n usart_ok \r\n");   
 
-	gpio_for_w5500_config();						        /*初始化MCU相关引脚*/
-	printf("\r\n w5500_ok \r\n");
-    reset_w5500();											/*硬复位W5500*/
-	printf("\r\n Reset_w5500_ok \r\n");
-    set_w5500_mac();										/*配置MAC地址*/
-	set_w5500_ip();											/*配置IP地址*/
-	printf("\r\n Network_ok \r\n");
-	socket_buf_init(txsize, rxsize);		/*初始化8个Socket的发送接收缓存大小*/
-	printf("\r\n Socket_ok \r\n");
+    gpio_for_w5500_config();                                /*初始化MCU相关引脚*/
+    printf("\r\n w5500_ok \r\n");
+    reset_w5500();                                          /*硬复位W5500*/
+    printf("\r\n Reset_w5500_ok \r\n");
+    set_w5500_mac();                                        /*配置MAC地址*/
+    set_w5500_ip();                                         /*配置IP地址*/
+    printf("\r\n Network_ok \r\n");
+    socket_buf_init(txsize, rxsize);        /*初始化8个Socket的发送接收缓存大小*/
+    printf("\r\n Socket_ok \r\n");
+    do_ping();
     while(1)
-	{
-        do_ping();
-		LED2_TOGGLE;
-		SysTick_Delay_ms(500);
+    {
+        LED2_TOGGLE;
+        SysTick_Delay_ms(500);
 
-	}     
-	
+    }     
+    
 }
 /*********************************************END OF FILE**********************/

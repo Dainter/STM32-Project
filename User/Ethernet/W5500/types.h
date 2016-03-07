@@ -1,7 +1,7 @@
 #ifndef _TYPE_H_
 #define _TYPE_H_
 
-#define	MAX_SOCK_NUM		8	/**< Maxmium number of socket  */
+#define MAX_SOCK_NUM        8   /**< Maxmium number of socket  */
 
 typedef char int8;
 
@@ -19,22 +19,22 @@ typedef long int32;
 
 typedef unsigned long uint32;
 
-typedef uint8			u_char;		/**< 8-bit value */
-typedef uint8 			SOCKET;
-typedef uint16			u_short;	/**< 16-bit value */
-typedef uint16			u_int;		/**< 16-bit value */
-typedef uint32			u_long;		/**< 32-bit value */
+typedef uint8           u_char;     /**< 8-bit value */
+typedef uint8           SOCKET;
+typedef uint16          u_short;    /**< 16-bit value */
+typedef uint16          u_int;      /**< 16-bit value */
+typedef uint32          u_long;     /**< 32-bit value */
 
 typedef union _un_l2cval 
 {
-	u_long	lVal;
-	u_char	cVal[4];
+    u_long  lVal;
+    u_char  cVal[4];
 }un_l2cval;
 
 typedef union _un_i2cval 
 {
-	u_int	iVal;
-	u_char	cVal[2];
+    u_int   iVal;
+    u_char  cVal[2];
 }un_i2cval;
 
-#endif		/* _TYPE_H_ */
+#endif      /* _TYPE_H_ */

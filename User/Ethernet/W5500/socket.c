@@ -1,10 +1,10 @@
 /**
 ******************************************************************************
-* @file    		Socket.c
-* @author  		WIZnet Software Team 
-* @version 		V1.0
-* @date    		2015-xx-xx
-* @brief   		Socket编程相关函数 
+* @file         Socket.c
+* @author       WIZnet Software Team 
+* @version      V1.0
+* @date         2015-xx-xx
+* @brief        Socket编程相关函数 
 ******************************************************************************
 */
 #include "socket.h"
@@ -14,11 +14,11 @@
 
 /**
 *@brief   This Socket function initialize the channel in perticular mode, 
-					and set the port and wait for W5200 done it.
-*@param		s: socket number.
-*@param		protocol: The socket to chose.
-*@param		port:The port to bind.
-*@param		flag: Set some bit of MR,such as **< No Delayed Ack(TCP) flag.
+                    and set the port and wait for W5200 done it.
+*@param     s: socket number.
+*@param     protocol: The socket to chose.
+*@param     port:The port to bind.
+*@param     flag: Set some bit of MR,such as **< No Delayed Ack(TCP) flag.
 *@return  1 for sucess else 0.
 */
 uint8 socket(SOCKET s, uint8 protocol, uint16 port, uint8 flag)
@@ -60,7 +60,7 @@ uint8 socket(SOCKET s, uint8 protocol, uint16 port, uint8 flag)
 
 /**
 *@brief   This function close the socket and parameter is "s" which represent the socket number
-*@param		s: socket number.
+*@param     s: socket number.
 *@return  None
 */
 void close(SOCKET s)
@@ -72,14 +72,14 @@ void close(SOCKET s)
    while( IINCHIP_READ(Sn_CR(s) ) )
        ;/* ------- */
    
-	IINCHIP_WRITE( Sn_IR(s) , 0xFF);	 /* all clear */
+    IINCHIP_WRITE( Sn_IR(s) , 0xFF);     /* all clear */
 }
 
 
 /**
 *@brief   This function established  the connection for the channel in passive (server) mode. 
-					This function waits for the request from the peer.
-*@param		s: socket number.
+                    This function waits for the request from the peer.
+*@param     s: socket number.
 *@return  1 for success else 0.
 */
 uint8 listen(SOCKET s)
@@ -103,11 +103,11 @@ uint8 listen(SOCKET s)
 
 
 /**
-*@brief		This function established  the connection for the channel in Active (client) mode.
-					This function waits for the untill the connection is established.
-*@param		s: socket number.
-*@param		addr: The server IP address to connect
-*@param		port: The server IP port to connect
+*@brief     This function established  the connection for the channel in Active (client) mode.
+                    This function waits for the untill the connection is established.
+*@param     s: socket number.
+*@param     addr: The server IP address to connect
+*@param     port: The server IP port to connect
 *@return  1 for success else 0.
 */
 uint8 connect(SOCKET s, uint8 * addr, uint16 port)
@@ -156,7 +156,7 @@ uint8 connect(SOCKET s, uint8 * addr, uint16 port)
 
 /**
 *@brief   This function used for disconnect the socket s
-*@param		s: socket number.
+*@param     s: socket number.
 *@return  1 for success else 0.
 */
 void disconnect(SOCKET s)
@@ -171,9 +171,9 @@ void disconnect(SOCKET s)
 
 /**
 *@brief   This function used to send the data in TCP mode
-*@param		s: socket number.
-*@param		buf: data buffer to send.
-*@param		len: data length.
+*@param     s: socket number.
+*@param     buf: data buffer to send.
+*@param     len: data length.
 *@return  1 for success else 0.
 */
 uint16 send(SOCKET s, const uint8 * buf, uint16 len)
@@ -226,11 +226,11 @@ uint16 send(SOCKET s, const uint8 * buf, uint16 len)
 }
 
 /**
-*@brief		This function is an application I/F function which is used to receive the data in TCP mode.
-					It continues to wait for data as much as the application wants to receive.
-*@param		s: socket number.
-*@param		buf: data buffer to receive.
-*@param		len: data length.
+*@brief     This function is an application I/F function which is used to receive the data in TCP mode.
+                    It continues to wait for data as much as the application wants to receive.
+*@param     s: socket number.
+*@param     buf: data buffer to receive.
+*@param     len: data length.
 *@return  received data size for success else 0.
 */
 uint16 recv(SOCKET s, uint8 * buf, uint16 len)
@@ -250,12 +250,12 @@ uint16 recv(SOCKET s, uint8 * buf, uint16 len)
 
 /**
 *@brief   This function is an application I/F function which is used to send the data for other then TCP mode.
-					Unlike TCP transmission, The peer's destination address and the port is needed.
-*@param		s: socket number.
-*@param		buf: data buffer to send.
-*@param		len: data length.
-*@param		addr: IP address to send.
-*@param		port: IP port to send.
+                    Unlike TCP transmission, The peer's destination address and the port is needed.
+*@param     s: socket number.
+*@param     buf: data buffer to send.
+*@param     len: data length.
+*@param     addr: IP address to send.
+*@param     port: IP port to send.
 *@return  This function return send data size for success else 0.
 */
 uint16 sendto(SOCKET s, const uint8 * buf, uint16 len, uint8 * addr, uint16 port)
@@ -284,7 +284,7 @@ uint16 sendto(SOCKET s, const uint8 * buf, uint16 len, uint8 * addr, uint16 port
       IINCHIP_WRITE( Sn_CR(s) ,Sn_CR_SEND);
       /* wait to process the command... */
       while( IINCHIP_READ( Sn_CR(s) ) )
-	  ;
+      ;
       /* ------- */
      while( (IINCHIP_READ( Sn_IR(s) ) & Sn_IR_SEND_OK) != Sn_IR_SEND_OK )
      {
@@ -302,13 +302,13 @@ uint16 sendto(SOCKET s, const uint8 * buf, uint16 len, uint8 * addr, uint16 port
 
 /**
 *@brief   This function is an application I/F function which is used to receive the data in other then
-					TCP mode. This function is used to receive UDP, IP_RAW and MAC_RAW mode, and handle the header as well.
-*@param		s: socket number.
-*@param		buf: data buffer to receive.
-*@param		len: data length.
-*@param		addr: IP address to receive.
-*@param		port: IP port to receive.
-*@return	This function return received data size for success else 0.
+                    TCP mode. This function is used to receive UDP, IP_RAW and MAC_RAW mode, and handle the header as well.
+*@param     s: socket number.
+*@param     buf: data buffer to receive.
+*@param     len: data length.
+*@param     addr: IP address to receive.
+*@param     port: IP port to receive.
+*@return    This function return received data size for success else 0.
 */
 uint16 recvfrom(SOCKET s, uint8 * buf, uint16 len, uint8 * addr, uint16 *port)
 {
@@ -346,9 +346,9 @@ uint16 recvfrom(SOCKET s, uint8 * buf, uint16 len, uint8 * addr, uint16 *port)
         break;
 
       case Sn_MR_IPRAW :
-//	   	printf("\r\n Sn_MR_IPRAW \r\n");
+//      printf("\r\n Sn_MR_IPRAW \r\n");
         wiz_read_buf(addrbsb, head, 0x06);
-		       
+               
         ptr += 6;
         addr[0]  = head[0];
         addr[1]  = head[1];
@@ -358,19 +358,19 @@ uint16 recvfrom(SOCKET s, uint8 * buf, uint16 len, uint8 * addr, uint16 *port)
         data_len = (data_len << 8) + head[5];
 
         addrbsb  = (uint32)(ptr<<8) +  (s<<5) + 0x18;
-	   
-//		printf(" data：%d \r\n",data_len);
+       
+//      printf(" data：%d \r\n",data_len);
         wiz_read_buf(addrbsb, buf, data_len);
-		 	        
+                    
         ptr += data_len;
 
         IINCHIP_WRITE( Sn_RX_RD0(s), (uint8)((ptr & 0xff00) >> 8));
         IINCHIP_WRITE( Sn_RX_RD1(s), (uint8)(ptr & 0x00ff));
-		
+        
         break;
 
       case Sn_MR_MACRAW :
-//	 printf("\r\n Sn_MR_MCRAW \r\n");
+//   printf("\r\n Sn_MR_MCRAW \r\n");
         wiz_read_buf(addrbsb, head, 0x02);
         ptr+=2;
         data_len = head[0];
@@ -404,8 +404,8 @@ uint16 recvfrom(SOCKET s, uint8 * buf, uint16 len, uint8 * addr, uint16 *port)
 #ifdef __MACRAW__
 /**
 *@brief   OPen the 0-th socket with MACRAW mode
-*@param		None
-*@return	None
+*@param     None
+*@return    None
 */
 void macraw_open(void)
 {
@@ -419,9 +419,9 @@ void macraw_open(void)
 
 /**
 *@brief   OPen the 0-th socket with MACRAW mode
-*@param		buf: data buffer to send.
-*@param		len: data length.
-*@return	This function return sended data size for success else 0.
+*@param     buf: data buffer to send.
+*@param     len: data length.
+*@return    This function return sended data size for success else 0.
 */
 uint16 macraw_send( const uint8 * buf, uint16 len )
 {
@@ -446,9 +446,9 @@ uint16 macraw_send( const uint8 * buf, uint16 len )
 
 /**
 *@brief   OPen the 0-th socket with MACRAW mode
-*@param		buf: data buffer to send.
-*@param		len: data length.
-*@return	This function return received data size for success else 0.
+*@param     buf: data buffer to send.
+*@param     len: data length.
+*@return    This function return received data size for success else 0.
 */
 uint16 macraw_recv( uint8 * buf, uint16 len )
 {

@@ -1,10 +1,10 @@
 /*
 **************************************************************************************************
-* @file    		w5500_conf.c
-* @author  		WIZnet Software Team 
-* @version 		V1.0
-* @date    		2015-02-14
-* @brief  		配置MCU，移植W5500程序需要修改的文件，配置W5500的MAC和IP地址
+* @file         w5500_conf.c
+* @author       WIZnet Software Team 
+* @version      V1.0
+* @date         2015-02-14
+* @brief        配置MCU，移植W5500程序需要修改的文件，配置W5500的MAC和IP地址
 **************************************************************************************************
 */
 #include <stdio.h> 
@@ -18,91 +18,93 @@
 #include "dhcp.h"
 
 
-CONFIG_MSG  ConfigMsg;																	/*配置结构体*/
+CONFIG_MSG  ConfigMsg;                                                                  /*配置结构体*/
 
 /*定义MAC地址,如果多块W5500网络适配板在同一现场工作，请使用不同的MAC地址*/
 uint8 mac[6]={0x00,0x08,0xdc,0x11,0x11,0x11};
 
 /*定义默认IP信息*/
-uint8 local_ip[4]  ={192,168,0,88};											/*定义W5500默认IP地址*/
-uint8 subnet[4]    ={255,255,255,0};										/*定义W5500默认子网掩码*/
-uint8 gateway[4]   ={192,168,1,1};											/*定义W5500默认网关*/
-uint8 dns_server[4]={114,114,114,114};									/*定义W5500默认DNS*/
+uint8 local_ip[4]  ={192,168,0,88};                                         /*定义W5500默认IP地址*/
+uint8 subnet[4]    ={255,255,255,0};                                        /*定义W5500默认子网掩码*/
+uint8 gateway[4]   ={192,168,0,133};                                          /*定义W5500默认网关*/
+uint8 dns_server[4]={114,114,114,114};                                  /*定义W5500默认DNS*/
 
-uint16 local_port=5000;	                       					/*定义本地端口*/
+uint16 local_port = 5000;                                         /*定义本地端口*/
 
 /*定义远端IP信息*/
-uint8  remote_ip[4]={192,168,0,133};											/*远端IP地址*/
-uint16 remote_port=5000;																/*远端端口号*/
+uint8  remote_ip[4]={192,168,0,133};                                            /*远端IP地址*/
+uint16 remote_port = 5000;                                                                /*远端端口号*/
 
 /*IP配置方法选择，请自行选择*/
-uint8	ip_from=IP_FROM_DEFINE;				
+uint8   ip_from = IP_FROM_DEFINE;             
 
-uint8   dhcp_ok   = 0;													   			/*dhcp成功获取IP*/
-uint32	ms        = 0;															  	/*毫秒计数*/
-uint32	dhcp_time = 0;															  	/*DHCP运行计数*/
-vu8	    ntptimer  = 0;															  	/*NPT秒计数*/
+uint8   dhcp_ok   = 0;                                                              /*dhcp成功获取IP*/
+uint32  ms        = 0;                                                              /*毫秒计数*/
+uint32  dhcp_time = 0;                                                              /*DHCP运行计数*/
+vu8     ntptimer  = 0;                                                              /*NPT秒计数*/
 
 /**
-*@brief		配置W5500的IP地址
-*@param		无
-*@return	无
+*@brief     配置W5500的IP地址
+*@param     无
+*@return    无
 */
 void set_w5500_ip(void)
-{	
-		
+{   
+        
    /*复制定义的配置信息到配置结构体*/
-	memcpy(ConfigMsg.mac, mac, 6);
-	memcpy(ConfigMsg.lip,local_ip,4);
-	memcpy(ConfigMsg.sub,subnet,4);
-	memcpy(ConfigMsg.gw,gateway,4);
-	memcpy(ConfigMsg.dns,dns_server,4);
-	if(ip_from==IP_FROM_DEFINE)	
+    memcpy(ConfigMsg.mac, mac, 6);
+    memcpy(ConfigMsg.lip,local_ip,4);
+    memcpy(ConfigMsg.sub,subnet,4);
+    memcpy(ConfigMsg.gw,gateway,4);
+    memcpy(ConfigMsg.dns,dns_server,4);
+    if(ip_from==IP_FROM_DEFINE) 
     {
-		printf(" 使用定义的IP信息配置W5500\r\n");
+        printf(" 使用定义的IP信息配置W5500\r\n");
     }
-	
-	
-	/*以下配置信息，根据需要选用*/	
-	ConfigMsg.sw_ver[0]=FW_VER_HIGH;
-	ConfigMsg.sw_ver[1]=FW_VER_LOW;	
+    
+    
+    /*以下配置信息，根据需要选用*/  
+    ConfigMsg.sw_ver[0]=FW_VER_HIGH;
+    ConfigMsg.sw_ver[1]=FW_VER_LOW; 
 
-	/*将IP配置信息写入W5500相应寄存器*/	
-	setSUBR(ConfigMsg.sub);
-	setGAR(ConfigMsg.gw);
-	setSIPR(ConfigMsg.lip);
-	
-	getSIPR (local_ip);			
-	printf(" W5500 IP地址   : %d.%d.%d.%d\r\n", local_ip[0],local_ip[1],local_ip[2],local_ip[3]);
-	getSUBR(subnet);
-	printf(" W5500 子网掩码 : %d.%d.%d.%d\r\n", subnet[0],subnet[1],subnet[2],subnet[3]);
-	getGAR(gateway);
-	printf(" W5500 网关     : %d.%d.%d.%d\r\n", gateway[0],gateway[1],gateway[2],gateway[3]);
+    /*将IP配置信息写入W5500相应寄存器*/ 
+    setSUBR(ConfigMsg.sub);
+    setGAR(ConfigMsg.gw);
+    setSIPR(ConfigMsg.lip);
+    
+    getSIPR (local_ip);         
+    printf(" W5500 IP地址   : %d.%d.%d.%d\r\n", local_ip[0],local_ip[1],local_ip[2],local_ip[3]);
+    getSUBR(subnet);
+    printf(" W5500 子网掩码 : %d.%d.%d.%d\r\n", subnet[0],subnet[1],subnet[2],subnet[3]);
+    getGAR(gateway);
+    printf(" W5500 网关     : %d.%d.%d.%d\r\n", gateway[0],gateway[1],gateway[2],gateway[3]);
 }
 
 /**
-*@brief		配置W5500的MAC地址
-*@param		无
-*@return	无
+*@brief     配置W5500的MAC地址
+*@param     无
+*@return    无
 */
 void set_w5500_mac(void)
 {
-	memcpy(ConfigMsg.mac, mac, 6);
-	setSHAR(ConfigMsg.mac);	/**/
+    memcpy(ConfigMsg.mac, mac, 6);
+    setSHAR(ConfigMsg.mac); /**/
+    getSIPR (mac);         
+    printf(" W5500 MAC地址   : %02x:%02x:%02x:%02x:%02x:%02x\r\n", mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 }
 
 /**
-*@brief		配置W5500的GPIO接口
-*@param		无
-*@return	无
+*@brief     配置W5500的GPIO接口
+*@param     无
+*@return    无
 */
 void gpio_for_w5500_config(void)
 {
   SPI_InitTypeDef  SPI_InitStructure;
   GPIO_InitTypeDef GPIO_InitStructure;
-	
+    
   RCC_APB2PeriphClockCmd(WIZ_SPIx_RESET_CLK|WIZ_SPIx_INT_CLK, ENABLE);
-	
+    
   /* Enable SPI1 and GPIO clocks */
   /*!< SPI_FLASH_SPI_CS_GPIO, SPI_FLASH_SPI_MOSI_GPIO, 
        SPI_FLASH_SPI_MISO_GPIO, SPI_FLASH_SPI_DETECT_GPIO 
@@ -145,68 +147,68 @@ void gpio_for_w5500_config(void)
   SPI_InitStructure.SPI_CRCPolynomial = 7;
   SPI_Init(WIZ_SPIx, &SPI_InitStructure);
   SPI_Cmd(WIZ_SPIx, ENABLE);
-	
+    
   /*定义RESET引脚*/
-  GPIO_InitStructure.GPIO_Pin = WIZ_RESET;					       /*选择要控制的GPIO引脚*/		 
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		     /*设置引脚速率为50MHz */		
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;		     /*设置引脚模式为通用推挽输出*/	
-  GPIO_Init(WIZ_SPIx_RESET_PORT, &GPIO_InitStructure);		 /*调用库函数，初始化GPIO*/
-  GPIO_SetBits(WIZ_SPIx_RESET_PORT, WIZ_RESET);		
-  /*定义INT引脚*/	
-  GPIO_InitStructure.GPIO_Pin = WIZ_INT;						       /*选择要控制的GPIO引脚*/		 
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		     /*设置引脚速率为50MHz*/		
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;				     /*设置引脚模式为通用推挽模拟上拉输入*/		
-  GPIO_Init(WIZ_SPIx_INT_PORT, &GPIO_InitStructure);			 /*调用库函数，初始化GPIO*/
+  GPIO_InitStructure.GPIO_Pin = WIZ_RESET;                         /*选择要控制的GPIO引脚*/      
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;          /*设置引脚速率为50MHz */       
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;           /*设置引脚模式为通用推挽输出*/ 
+  GPIO_Init(WIZ_SPIx_RESET_PORT, &GPIO_InitStructure);       /*调用库函数，初始化GPIO*/
+  GPIO_SetBits(WIZ_SPIx_RESET_PORT, WIZ_RESET);     
+  /*定义INT引脚*/   
+  GPIO_InitStructure.GPIO_Pin = WIZ_INT;                               /*选择要控制的GPIO引脚*/      
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;          /*设置引脚速率为50MHz*/        
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;                  /*设置引脚模式为通用推挽模拟上拉输入*/     
+  GPIO_Init(WIZ_SPIx_INT_PORT, &GPIO_InitStructure);             /*调用库函数，初始化GPIO*/
 }
 
 /**
-*@brief		W5500片选信号设置函数
-*@param		val: 为“0”表示片选端口为低，为“1”表示片选端口为高
-*@return	无
+*@brief     W5500片选信号设置函数
+*@param     val: 为“0”表示片选端口为低，为“1”表示片选端口为高
+*@return    无
 */
 void wiz_cs(uint8_t val)
 {
-	if (val == LOW) 
-	{
-	  GPIO_ResetBits(WIZ_SPIx_SCS_PORT, WIZ_SPIx_SCS); 
-	}
-	else if (val == HIGH)
-	{
-	  GPIO_SetBits(WIZ_SPIx_SCS_PORT, WIZ_SPIx_SCS); 
-	}
+    if (val == LOW) 
+    {
+      GPIO_ResetBits(WIZ_SPIx_SCS_PORT, WIZ_SPIx_SCS); 
+    }
+    else if (val == HIGH)
+    {
+      GPIO_SetBits(WIZ_SPIx_SCS_PORT, WIZ_SPIx_SCS); 
+    }
 }
 
 /**
-*@brief		设置W5500的片选端口SCSn为低
-*@param		无
-*@return	无
+*@brief     设置W5500的片选端口SCSn为低
+*@param     无
+*@return    无
 */
 void iinchip_csoff(void)
 {
-	wiz_cs(LOW);
+    wiz_cs(LOW);
 }
 
 /**
-*@brief		设置W5500的片选端口SCSn为高
-*@param		无
-*@return	无
+*@brief     设置W5500的片选端口SCSn为高
+*@param     无
+*@return    无
 */
 void iinchip_cson(void)
-{	
+{   
    wiz_cs(HIGH);
 }
 
 /**
-*@brief		W5500复位设置函数
-*@param		无
-*@return	无
+*@brief     W5500复位设置函数
+*@param     无
+*@return    无
 */
 void reset_w5500(void)
 {
-	GPIO_ResetBits(WIZ_SPIx_RESET_PORT, WIZ_RESET);
-	delay_us(2);  
-	GPIO_SetBits(WIZ_SPIx_RESET_PORT, WIZ_RESET);
-	delay_ms(1600);
+    GPIO_ResetBits(WIZ_SPIx_RESET_PORT, WIZ_RESET);
+    delay_us(2);  
+    GPIO_SetBits(WIZ_SPIx_RESET_PORT, WIZ_RESET);
+    delay_ms(1600);
 }
 
 uint8_t SPI_SendByte(uint8_t byte)
@@ -225,9 +227,9 @@ uint8_t SPI_SendByte(uint8_t byte)
 }
 
 /**
-*@brief		STM32 SPI1读写8位数据
-*@param		dat：写入的8位数据
-*@return	无
+*@brief     STM32 SPI1读写8位数据
+*@param     dat：写入的8位数据
+*@return    无
 */
 uint8  IINCHIP_SpiSendData(uint8 dat)
 {
@@ -235,15 +237,15 @@ uint8  IINCHIP_SpiSendData(uint8 dat)
 }
 
 /**
-*@brief		写入一个8位数据到W5500
-*@param		addrbsb: 写入数据的地址
+*@brief     写入一个8位数据到W5500
+*@param     addrbsb: 写入数据的地址
 *@param   data：写入的8位数据
-*@return	无
+*@return    无
 */
 void IINCHIP_WRITE( uint32 addrbsb,  uint8 data)
 {
-   iinchip_csoff();                              		
-   IINCHIP_SpiSendData( (addrbsb & 0x00FF0000)>>16);	
+   iinchip_csoff();                                     
+   IINCHIP_SpiSendData( (addrbsb & 0x00FF0000)>>16);    
    IINCHIP_SpiSendData( (addrbsb & 0x0000FF00)>> 8);
    IINCHIP_SpiSendData( (addrbsb & 0x000000F8) + 4);  
    IINCHIP_SpiSendData(data);                   
@@ -251,10 +253,10 @@ void IINCHIP_WRITE( uint32 addrbsb,  uint8 data)
 }
 
 /**
-*@brief		从W5500读出一个8位数据
-*@param		addrbsb: 写入数据的地址
+*@brief     从W5500读出一个8位数据
+*@param     addrbsb: 写入数据的地址
 *@param   data：从写入的地址处读取到的8位数据
-*@return	无
+*@return    无
 */
 uint8 IINCHIP_READ(uint32 addrbsb)
 {
@@ -269,11 +271,11 @@ uint8 IINCHIP_READ(uint32 addrbsb)
 }
 
 /**
-*@brief		向W5500写入len字节数据
-*@param		addrbsb: 写入数据的地址
+*@brief     向W5500写入len字节数据
+*@param     addrbsb: 写入数据的地址
 *@param   buf：写入字符串
 *@param   len：字符串长度
-*@return	len：返回字符串长度
+*@return    len：返回字符串长度
 */
 uint16 wiz_write_buf(uint32 addrbsb,uint8* buf,uint16 len)
 {
@@ -292,11 +294,11 @@ uint16 wiz_write_buf(uint32 addrbsb,uint8* buf,uint16 len)
 }
 
 /**
-*@brief		从W5500读出len字节数据
-*@param		addrbsb: 读取数据的地址
-*@param 	buf：存放读取数据
-*@param		len：字符串长度
-*@return	len：返回字符串长度
+*@brief     从W5500读出len字节数据
+*@param     addrbsb: 读取数据的地址
+*@param     buf：存放读取数据
+*@param     len：字符串长度
+*@return    len：返回字符串长度
 */
 uint16 wiz_read_buf(uint32 addrbsb, uint8* buf,uint16 len)
 {

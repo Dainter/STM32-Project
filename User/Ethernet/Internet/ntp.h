@@ -1,5 +1,5 @@
-#ifndef	__NTP_H__
-#define	__NTP_H__
+#ifndef __NTP_H__
+#define __NTP_H__
 #include "types.h"
 /* for ntpclient */ 
 
@@ -33,20 +33,20 @@ typedef struct _NPTformat
 #pragma pack()
 
 #pragma pack(1)
-typedef struct _DateTime	/*此结构体定义了NTP时间同步的相关变量*/
+typedef struct _DateTime    /*此结构体定义了NTP时间同步的相关变量*/
 {
-  uint16 year[2];					/*年为2字节 分为高低两位 */
-  uint8 month;						/*	月 */
-  uint8 day;							/*	天 */
-  uint8 hour;							/*	时 */
-  uint8 minute;						/*	分 */
-  uint8 second;						/*	秒 */
+  uint16 year[2];                   /*年为2字节 分为高低两位 */
+  uint8 month;                      /*  月 */
+  uint8 day;                            /*  天 */
+  uint8 hour;                           /*  时 */
+  uint8 minute;                     /*  分 */
+  uint8 second;                     /*  秒 */
 } DateTime;
 #pragma pack()
 
 
-#define SECS_PERDAY     	86400UL             	// seconds in a day = 60*60*24
-#define UTC_ADJ_HRS         	9              	        // SEOUL : GMT+9 
+#define SECS_PERDAY         86400UL                 // seconds in a day = 60*60*24
+#define UTC_ADJ_HRS             9                       // SEOUL : GMT+9 
 #define EPOCH                   1900                    // NTP start year
 void get_seconds_from_ntp_server(uint8* buf,uint16 idx);
 void ntp_client_init(void);

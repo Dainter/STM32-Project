@@ -7,15 +7,15 @@ extern char from[];             //发件人邮箱
 extern char to[];            //收件人邮箱
 extern uint8 mail_send_ok;
 //SMTP_STATE
-#define waitfor220 			0
-#define waitforHELO250 		1
-#define waitforAUTH334 		2
-#define waitforuser334 		3
-#define waitforpassword235 	4
-#define waitforsend250 		5
-#define waitforrcpt250 		6
-#define waitfordate354 		7
-#define waitformime250 		8
+#define waitfor220          0
+#define waitforHELO250      1
+#define waitforAUTH334      2
+#define waitforuser334      3
+#define waitforpassword235  4
+#define waitforsend250      5
+#define waitforrcpt250      6
+#define waitfordate354      7
+#define waitformime250      8
 
 
 

@@ -140,7 +140,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-	TimingDelay_Decrement();	
+    TimingDelay_Decrement();    
 }
 
 
@@ -152,15 +152,15 @@ void SysTick_Handler(void)
 /******************************************************************************/
 void macUSART_INT_FUN(void)
 {
-	uint8_t ch;
-	
-	if(USART_GetITStatus(macUSARTx, USART_IT_RXNE) != RESET)
-	{ 	
-	    //ch = USART1->DR;
-			ch = USART_ReceiveData(macUSARTx);
-	  	printf( "%c", ch );    //将接受到的数据直接返回打印
-	} 
-	 
+    uint8_t ch;
+    
+    if(USART_GetITStatus(macUSARTx, USART_IT_RXNE) != RESET)
+    {   
+        //ch = USART1->DR;
+            ch = USART_ReceiveData(macUSARTx);
+        printf( "%c", ch );    //将接受到的数据直接返回打印
+    } 
+     
 }
 
 /**

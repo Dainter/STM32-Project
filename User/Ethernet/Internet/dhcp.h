@@ -9,7 +9,7 @@ typedef struct _DHCP_GET
   uint8 lip[4];
   uint8 sub[4];
   uint8 gw[4];
-  uint8 dns[4];	
+  uint8 dns[4]; 
 }DHCP_Get;
 
 extern uint32  dhcp_time;
@@ -44,8 +44,8 @@ extern DHCP_Get DHCP_GET;
 #define  DHCP_FLAGSBROADCAST     0x8000
 
 /* UDP port numbers for DHCP */
-#define  DHCP_SERVER_PORT        67	/* from server to client */
-#define  DHCP_CLIENT_PORT        68	/* from client to server */
+#define  DHCP_SERVER_PORT        67 /* from server to client */
+#define  DHCP_CLIENT_PORT        68 /* from client to server */
 
 /* DHCP message OP code */
 #define  DHCP_BOOTREQUEST        1
@@ -68,10 +68,10 @@ extern DHCP_Get DHCP_GET;
 #define DHCP_HOPS                0
 #define DHCP_SECS                0
 
-#define MAGIC_COOKIE		         0x63825363
+#define MAGIC_COOKIE                 0x63825363
 #define DEFAULT_XID              0x12345678
 
-#define DEFAULT_LEASETIME        0xffffffff	/* infinite lease time */
+#define DEFAULT_LEASETIME        0xffffffff /* infinite lease time */
 
 /* DHCP option and value (cf. RFC1533) */
 enum
@@ -160,11 +160,11 @@ typedef struct _RIP_MSG
    uint8  OPT[312];
 }RIP_MSG;
 
-#define MAX_DHCP_OPT	16
+#define MAX_DHCP_OPT    16
 
 
 void init_dhcp_client(void);
 
 uint8 check_DHCP_state(SOCKET s); // Check the DHCP state
 void do_dhcp(void);
-#endif	/* _DHCP_H_ */
+#endif  /* _DHCP_H_ */

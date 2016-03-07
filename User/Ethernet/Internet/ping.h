@@ -1,5 +1,5 @@
-#ifndef	_PING_H_
-#define	_PING_H_
+#ifndef _PING_H_
+#define _PING_H_
 
 #include "w5500_conf.h"
 #include "w5500.h"
@@ -22,11 +22,11 @@ extern uint8_t pdestaddr[4];
 
 typedef struct pingmsg
 {
-  uint8  Type; 		// 0 - Ping Reply, 8 - Ping Request
-  uint8  Code;		// Always 0
-  uint16  CheckSum;	// Check sum
-  uint16  ID;	            // Identification
-  uint16  SeqNum; 	// Sequence Number
+  uint8  Type;      // 0 - Ping Reply, 8 - Ping Request
+  uint8  Code;      // Always 0
+  uint16  CheckSum; // Check sum
+  uint16  ID;               // Identification
+  uint16  SeqNum;   // Sequence Number
   int8_t  Data[BUF_LEN];// Ping Data  : 1452 = IP RAW MTU - sizeof(Type+Code+CheckSum+ID+SeqNum)
 } PINGMSGR;
 

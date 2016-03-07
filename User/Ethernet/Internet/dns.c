@@ -1,10 +1,10 @@
 /**
 ******************************************************************************
-* @file    			DNS.c
-* @author  			WIZnet Software Team 
-* @version 			V1.0
-* @date    			2015-xx-xx
-* @brief   			域名解析客户端函数 通过解析域名  Domain_name可获得其IP地址   
+* @file             DNS.c
+* @author           WIZnet Software Team 
+* @version          V1.0
+* @date             2015-xx-xx
+* @brief            域名解析客户端函数 通过解析域名  Domain_name可获得其IP地址   
 ******************************************************************************
 */
 
@@ -26,18 +26,18 @@ uint16 MSG_ID = 0x1122;
 uint8 BUFPUB[1024];
 
 /**
-*@brief		 	DNS查询报文信息
-*@param		 	op   - 期望的数据
-						name - 指向域名的指针
-						buf  - 接收DNS信息的
-						len  - buf的长度
-*@return		返回DNS报文指针
+*@brief         DNS查询报文信息
+*@param         op   - 期望的数据
+                        name - 指向域名的指针
+                        buf  - 接收DNS信息的
+                        len  - buf的长度
+*@return        返回DNS报文指针
 */
 int dns_makequery(uint16 op, uint8 * name, uint8 * buf, uint16 len)
 {
   uint8  *cp;
   uint8   *cp1;
-  //	int8   sname[MAX_DNS_BUF_SIZE];
+  //    int8   sname[MAX_DNS_BUF_SIZE];
   uint8  *dname;
   uint16 p;
   uint16 dlen;
@@ -46,7 +46,7 @@ int dns_makequery(uint16 op, uint8 * name, uint8 * buf, uint16 len)
   
   MSG_ID++;
   *(uint16*)&cp[0] = htons(MSG_ID);
-  p = (op << 11) | 0x0100;			/* Recursion desired */
+  p = (op << 11) | 0x0100;          /* Recursion desired */
   *(uint16*)&cp[2] = htons(p);
   *(uint16*)&cp[4] = htons(1);
   *(uint16*)&cp[6] = htons(0);
@@ -54,7 +54,7 @@ int dns_makequery(uint16 op, uint8 * name, uint8 * buf, uint16 len)
   *(uint16*)&cp[10]= htons(0);
   
   cp += sizeof(uint16)*6;
-  //	strcpy(sname, name);
+  //    strcpy(sname, name);
   dname = name;
   dlen = strlen((char*)dname);
   for (;;)
@@ -62,10 +62,10 @@ int dns_makequery(uint16 op, uint8 * name, uint8 * buf, uint16 len)
     /* Look for next dot */
     cp1 = (unsigned char*)strchr((char*)dname, '.');
     
-    if (cp1) len = cp1 - dname;	/* More to come */
-    else len = dlen;			/* Last component */
+    if (cp1) len = cp1 - dname; /* More to come */
+    else len = dlen;            /* Last component */
     
-    *cp++ = len;				/* Write length of component */
+    *cp++ = len;                /* Write length of component */
     if (len == 0) break;
     
     /* Copy component up to (but not including) dot */
@@ -73,35 +73,35 @@ int dns_makequery(uint16 op, uint8 * name, uint8 * buf, uint16 len)
     cp += len;
     if (!cp1)
     {
-      *cp++ = 0;			/* Last one; write null and finish */
+      *cp++ = 0;            /* Last one; write null and finish */
       break;
     }
     dname += len+1;
     dlen -= len+1;
   }
   
-  *(uint16*)&cp[0] = htons(0x0001);				/* type */
-  *(uint16*)&cp[2] = htons(0x0001);				/* class */
+  *(uint16*)&cp[0] = htons(0x0001);             /* type */
+  *(uint16*)&cp[2] = htons(0x0001);             /* class */
   cp += sizeof(uint16)*2;
   
   return ((int)((uint32)(cp) - (uint32)(buf)));
 }
 
 /**
-*@brief		 这个功能函数压缩域名信息转化为人类可读的形式
-*@param		 msg        - 指向回复信息的指针
+*@brief      这个功能函数压缩域名信息转化为人类可读的形式
+*@param      msg        - 指向回复信息的指针
            compressed - 指向回复信息中域名的指针
            buf        - 存放转化后的域名信息
            len        - buf的长度
-*@return	 返回压缩域名信息长度
+*@return     返回压缩域名信息长度
 */
 int parse_name(uint8 * msg, uint8 * compressed, /*char * buf,*/ uint16 len)
 {
-  uint16 slen;		/* Length of current segment */
+  uint16 slen;      /* Length of current segment */
   uint8  * cp;
-  int16  clen = 0;		/* Total length of compressed name */
-  int16  indirect = 0;	/* Set if indirection encountered */
-  int16  nseg = 0;		/* Total number of segments in name */
+  int16  clen = 0;      /* Total length of compressed name */
+  int16  indirect = 0;  /* Set if indirection encountered */
+  int16  nseg = 0;      /* Total number of segments in name */
   int8   name[MAX_DNS_BUF_SIZE];
   int8   *buf;
   
@@ -111,7 +111,7 @@ int parse_name(uint8 * msg, uint8 * compressed, /*char * buf,*/ uint16 len)
   
   for (;;)
   {
-    slen = *cp++;	/* Length of this segment */
+    slen = *cp++;   /* Length of this segment */
     
     if (!indirect) clen++;
     
@@ -125,7 +125,7 @@ int parse_name(uint8 * msg, uint8 * compressed, /*char * buf,*/ uint16 len)
       slen = *cp++;
     }
     
-    if (slen == 0)	/* zero length == all done */
+    if (slen == 0)  /* zero length == all done */
       break;
     
     len -= slen + 1;
@@ -149,41 +149,41 @@ int parse_name(uint8 * msg, uint8 * compressed, /*char * buf,*/ uint16 len)
   *buf++ = '\0';
   len--;
   
-  return clen;	/* Length of compressed message */
+  return clen;  /* Length of compressed message */
 }
 
 /**
-*@brief		 这个功能函数解析答复消息问题记录
-*@param		 msg - 指向回复信息的指针
+*@brief      这个功能函数解析答复消息问题记录
+*@param      msg - 指向回复信息的指针
            cp  - 指向问题记录的指针
-*@return	 返回下一个记录指针
+*@return     返回下一个记录指针
 */
 uint8 * dns_question(uint8 * msg, uint8 * cp)
 {
   int16 len;
-  //	int8  xdata name[MAX_DNS_BUF_SIZE];
+  //    int8  xdata name[MAX_DNS_BUF_SIZE];
   
   len = parse_name(msg, cp, /*name,*/ MAX_DNS_BUF_SIZE);
   
   if (len == -1) return 0;
   
   cp += len;
-  cp += 2;		/* type */
-  cp += 2;		/* class */
+  cp += 2;      /* type */
+  cp += 2;      /* class */
   
   return cp;
 }
 
 /**
-*@brief		 这个功能函数解析回复信息的回答记录
-*@param		 msg - 指向回复信息的指针
+*@brief      这个功能函数解析回复信息的回答记录
+*@param      msg - 指向回复信息的指针
            cp  - 接收回答记录的指针
-*@return	 返回下一个回复记录指针
+*@return     返回下一个回复记录指针
 */
 uint8 * dns_answer(uint8 * msg, uint8 * cp)
 {
   int16 len, type;
-  //	int8  xdata name[MAX_DNS_BUF_SIZE];
+  //    int8  xdata name[MAX_DNS_BUF_SIZE];
   
   len = parse_name(msg, cp, /*name,*/ MAX_DNS_BUF_SIZE);
   
@@ -191,10 +191,10 @@ uint8 * dns_answer(uint8 * msg, uint8 * cp)
   
   cp += len;
   type = ntohs(*((uint16*)&cp[0]));
-  cp += 2;		/* type */
-  cp += 2;		/* class */
-  cp += 4;		/* ttl */
-  cp += 2;		/* len */
+  cp += 2;      /* type */
+  cp += 2;      /* class */
+  cp += 4;      /* ttl */
+  cp += 2;      /* len */
   
   switch (type)
   {
@@ -263,11 +263,11 @@ uint8 * dns_answer(uint8 * msg, uint8 * cp)
 }
 
 /**
-*@brief		 这个功能函数解析来自DNS服务器的回复信息
-*@param		 dhdr - 指向DNS信息头的指针
+*@brief      这个功能函数解析来自DNS服务器的回复信息
+*@param      dhdr - 指向DNS信息头的指针
            buf  - 接收回复信息
            len  - 回复信息的长度
-*@return	 无
+*@return     无
 */
 uint8 parseMSG(struct dhdr * pdhdr, uint8 * pbuf)
 {
@@ -319,52 +319,52 @@ uint8 parseMSG(struct dhdr * pdhdr, uint8 * pbuf)
     ;
   }
   
-  if(pdhdr->rcode == 0) return 1;		// No error
+  if(pdhdr->rcode == 0) return 1;       // No error
   else return 0;
 }
 
 /**
-*@brief		 	这个功能函数查询DNS报文信息，解析来自DNS服务器的回复
-*@param			s：DNS服务器socket，name:要解析的信息
-*@return		成功: 返回1, 失败 :返回 -1
+*@brief         这个功能函数查询DNS报文信息，解析来自DNS服务器的回复
+*@param         s：DNS服务器socket，name:要解析的信息
+*@return        成功: 返回1, 失败 :返回 -1
 */
 uint8 dns_query(uint8 s, uint8 * name)
 {
   static uint32 dns_wait_time = 0;
-  struct dhdr dhp;											//定义一个结构体用来包含报文头信息
+  struct dhdr dhp;                                          //定义一个结构体用来包含报文头信息
   uint8 ip[4];
   uint16 len, port;
-  switch(getSn_SR(s))												//获取socket状态
+  switch(getSn_SR(s))                                               //获取socket状态
   {
-    case SOCK_UDP:												//socket打开
+    case SOCK_UDP:                                              //socket打开
       if ((len = getSn_RX_RSR(s)) > 0)
       {
         if (len > MAX_DNS_BUF_SIZE) len = MAX_DNS_BUF_SIZE;
-        len = recvfrom(s, BUFPUB, len, ip, &port);				//接收UDP传输的数据并存入BUFPUB
-        if(parseMSG(&dhp, BUFPUB))						//解析DNS响应信息
-					{
-          close(s);														//关闭socket
-          return DNS_RET_SUCCESS;							//返回DNS解析成功域名信息
+        len = recvfrom(s, BUFPUB, len, ip, &port);              //接收UDP传输的数据并存入BUFPUB
+        if(parseMSG(&dhp, BUFPUB))                      //解析DNS响应信息
+                    {
+          close(s);                                                     //关闭socket
+          return DNS_RET_SUCCESS;                           //返回DNS解析成功域名信息
         }
         else 
           dns_wait_time = DNS_RESPONSE_TIMEOUT;//等待响应时间设置为超时
       }
       else
       {
-        delay_ms(1000);													//没有收到DNS服务器的UDP回复，避免太频繁，延时1s
-        dns_wait_time++;												//DNS响应时间加1
+        delay_ms(1000);                                                 //没有收到DNS服务器的UDP回复，避免太频繁，延时1s
+        dns_wait_time++;                                                //DNS响应时间加1
         //if(ConfigMsg.debug) printf("dns wait time=%d\r\n", dns_wait_time);
       }
       if(dns_wait_time >= DNS_RESPONSE_TIMEOUT)   // 如果DNS等待时间超过3s
       {
-        close(s);																	//关闭socket
+        close(s);                                                                   //关闭socket
         return DNS_RET_FAIL;
       }
       break;
     case SOCK_CLOSED:
       dns_wait_time = 0;
-      socket(s, Sn_MR_UDP, 3000, 0);							//打开W5500的socket的3000端口，并设置为UDP模式
-		len = dns_makequery(0, name, BUFPUB, MAX_DNS_BUF_SIZE);//接收DNS请求报文并存入BUFPUB
+      socket(s, Sn_MR_UDP, 3000, 0);                            //打开W5500的socket的3000端口，并设置为UDP模式
+        len = dns_makequery(0, name, BUFPUB, MAX_DNS_BUF_SIZE);//接收DNS请求报文并存入BUFPUB
       sendto(s, BUFPUB, len, EXTERN_DNS_SERVERIP, IPPORT_DOMAIN);//发送DNS请求报文给DNS服务器
       break;         
   }
@@ -372,9 +372,9 @@ uint8 dns_query(uint8 s, uint8 * name)
 }
 
 /**
-*@brief		 	这个功能函数查询DNS报文信息，解析来自DNS服务器的回复
-*@param			s：DNS服务器socket，name:要解析的信息
-*@return		成功: 返回1, 失败 :返回 -1
+*@brief         这个功能函数查询DNS报文信息，解析来自DNS服务器的回复
+*@param         s：DNS服务器socket，name:要解析的信息
+*@return        成功: 返回1, 失败 :返回 -1
 */
 void do_dns(void)
 {
@@ -389,15 +389,15 @@ void do_dns(void)
   {
     switch(dns_query(SOCK_DNS,domain_name))//发出DNS请求报文和解析DNS响应报文
     {
-      case DNS_RET_SUCCESS:								//DNS解析域名成功
-        dns_ok=1;														//DNS运行标志位置1
+      case DNS_RET_SUCCESS:                             //DNS解析域名成功
+        dns_ok=1;                                                       //DNS运行标志位置1
         memcpy(ConfigMsg.rip,DNS_GET_IP,4);//把解析到的IP地址复制给ConfigMsg.rip
-        dns_retry_cnt=0;										//DNS请求报文次数置0
+        dns_retry_cnt=0;                                        //DNS请求报文次数置0
         printf("Get [%s]'s IP address [%d.%d.%d.%d] from %d.%d.%d.%d\r\n",domain_name,ConfigMsg.rip[0],ConfigMsg.rip[1],ConfigMsg.rip[2],ConfigMsg.rip[3],ConfigMsg.dns[0],ConfigMsg.dns[1],ConfigMsg.dns[2],ConfigMsg.dns[3]);
         break;
-      case DNS_RET_FAIL:											//DNS解析域名失败
-        dns_ok=0;															//DNS运行标志位置0
-        dns_retry_cnt++;											//DNS请求报文次数加1
+      case DNS_RET_FAIL:                                            //DNS解析域名失败
+        dns_ok=0;                                                           //DNS运行标志位置0
+        dns_retry_cnt++;                                            //DNS请求报文次数加1
         printf("Fail! Please check your network configuration or DNS server.\r\n");
         break;
       default:
@@ -405,7 +405,7 @@ void do_dns(void)
     }
     
   }
-  else																	//如果DNS服务器IP为0.0.0.0
+  else                                                                  //如果DNS服务器IP为0.0.0.0
      printf("Invalid DNS server [%d.%d.%d.%d]\r\n",ConfigMsg.dns[0],ConfigMsg.dns[1],ConfigMsg.dns[2],ConfigMsg.dns[3]);
 
 }
