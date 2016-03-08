@@ -24,6 +24,8 @@
 #include "w5500_conf.h"
 #include "ping.h"
 #include "dhcp.h"
+#include "tcp_demo.h"
+#include "udp_demo.h"
 
 
 /**
@@ -61,6 +63,8 @@ int main(void)
     while(1)
     {
         ping_listening();
+        //do_tcp_server();
+        do_udp();
         LED2_TOGGLE;
         SysTick_Delay_ms(500);
 

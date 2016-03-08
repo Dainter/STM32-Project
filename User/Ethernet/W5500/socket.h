@@ -6,17 +6,17 @@
 #include "Types.h"
 
 /*Socket 端口选择，可按自己的习惯定义*/
-#define SOCK_TCPS             0
 #define SOCK_HUMTEM           0
 #define SOCK_PING             0
+#define SOCK_TCPS             1
 #define SOCK_TCPC             1
 #define SOCK_UDPS             2
 #define SOCK_WEIBO            2
 #define SOCK_DHCP             3
 #define SOCK_HTTPS            4
 #define SOCK_HTTPC            4
-#define SOCK_NETBIOS          6                                                                   /* 定义NetBIOS采用的socket*/
 #define SOCK_DNS              5
+#define SOCK_NETBIOS          6                                                                   /* 定义NetBIOS采用的socket*/
 #define SOCK_SMTP             6
 #define SOCK_NTP              7
 //#define NETBIOS_SOCK    6 //在netbios.c已定义

@@ -11,7 +11,7 @@
 
 #define PING_DEBUG
 PINGMSGR PingRequest;    
-  
+PINGMSGR PingReply;
 
 static uint16 RandomID = 0x1234; 
 static uint16 RandomSeqNum = 0x4321;
@@ -219,12 +219,12 @@ uint8 ping_reply(uint8 s, uint8 *addr)
     
     ping_request_received = 0;                                        /*ping 请求标志位清0*/
     PingReply.Type = PING_REPLY;                                /*Ping-Reply*/
-    PingReply.Code = CODE_ZERO;                                       /*总是 '0'*/
-    PingReply.ID = htons(RandomID++);                                     /*设置ping响应ID为随机的整型变量*/
-    PingReply.SeqNum =htons(RandomSeqNum++);                              /*设置ping响应的序列号为随机整形变量*/
+    PingReply.Code = PingRequest.Code;                                       /*总是 '0'*/
+    PingReply.ID = PingRequest.ID;                                     /*设置ping响应ID为随机的整型变量*/
+    PingReply.SeqNum = PingRequest.SeqNum;                              /*设置ping响应的序列号为随机整形变量*/
     for(i = 0 ; i < BUF_LEN; i++)
     {                                   
-        PingReply.Data[i] = (i) % 8;                                                  /*ping相应的数在'0'~'8‘*/
+        PingReply.Data[i] = PingRequest.Data[i];                                                  /*ping相应的数在'0'~'8‘*/
     }
     PingReply.CheckSum = 0;
     /* 计算响应次数*/
@@ -260,7 +260,7 @@ uint8 ping_reply_recv(uint8 s, uint8 *addr,  uint16 rlen)
     uint8 data_buf[128];
     
     uint16 port = 3000;
-    PINGMSGR PingReply;
+
     len = recvfrom(s, (uint8 *)data_buf,rlen,addr,&port);           /*从目的端接收数据*/
     if(data_buf[0] == PING_REPLY) 
     {
@@ -287,25 +287,25 @@ uint8 ping_reply_recv(uint8 s, uint8 *addr,  uint16 rlen)
     }
     else if(data_buf[0] == PING_REQUEST)
     {
-        PingReply.Code   = data_buf[1];
-        PingReply.Type   = data_buf[2];
-        PingReply.CheckSum  = (data_buf[3]<<8) + data_buf[2];
-        PingReply.ID         = (data_buf[5]<<8) + data_buf[4];
-        PingReply.SeqNum     = (data_buf[7]<<8) + data_buf[6];      
+        PingRequest.Type   = data_buf[0];
+        PingRequest.Code   = data_buf[1];
+        PingRequest.CheckSum  = (data_buf[3]<<8) + data_buf[2];
+        PingRequest.ID         = (data_buf[5]<<8) + data_buf[4];
+        PingRequest.SeqNum     = (data_buf[7]<<8) + data_buf[6];      
         for(i=0; i<len-8 ; i++)
         {
-            PingReply.Data[i] = data_buf[8+i];
+            PingRequest.Data[i] = data_buf[8+i];
         }
-        tmp_checksum = PingReply.CheckSum;                                          /*检查ping回复次数*/
-        PingReply.CheckSum = 0;
-        if(tmp_checksum != PingReply.CheckSum)
+        tmp_checksum = PingRequest.CheckSum;                                          /*检查ping回复次数*/
+        PingRequest.CheckSum = 0;
+        if(tmp_checksum != PingRequest.CheckSum)
         {
-            printf( " \n CheckSum is in correct %x shold be %x \n",   (tmp_checksum),  htons(PingReply.CheckSum)) ;
+            printf( " \n CheckSum is in correct %x shold be %x \n",   (tmp_checksum),  htons(PingRequest.CheckSum)) ;
         }
         else
         {       }
         printf("Request from %d.%d.%d.%d  ID:%x SeqNum:%x  :data size %d bytes\r\n",
-        (addr[0]),  (addr[1]),  (addr[2]),  (addr[3]),  (PingReply.ID),  (PingReply.SeqNum),  (rlen+6) );      
+        (addr[0]),  (addr[1]),  (addr[2]),  (addr[3]),  (PingRequest.ID),  (PingRequest.SeqNum),  (rlen+6) );      
         ping_request_received =1;                                                                 /* 当退出ping回复循环时，设置ping回复标志为1    */
     }
     else
@@ -344,7 +344,8 @@ void ping_listening(void)
     {   
         if ( (len = getSn_RX_RSR(s) ) > 0)
         {
-            ping_reply_recv(s, addr, len);                                               /*获取回复信息*/
+            ping_reply_recv(s, addr, len); 
+            /*获取回复信息*/
             rep++;
             break;
         }

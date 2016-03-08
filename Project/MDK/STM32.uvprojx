@@ -688,6 +688,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\Ethernet\Internet\dhcp.c</FilePath>
             </File>
+            <File>
+              <FileName>tcp_demo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Ethernet\Internet\tcp_demo.c</FilePath>
+            </File>
+            <File>
+              <FileName>udp_demo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\Ethernet\Internet\udp_demo.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
