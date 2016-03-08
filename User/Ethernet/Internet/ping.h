@@ -34,7 +34,10 @@ typedef struct pingmsg
 void ping_auto(uint8 s, uint8 *addr);
 void ping_count(uint8 s, uint16_t pCount, uint8 *addr);
 uint8 ping_request(uint8 s, uint8 *addr);
-uint8 ping_reply(uint8 s,  uint8 *addr, uint16_t rlen);
+uint8 ping_reply(uint8 s, uint8 *addr);
+uint8 ping_reply_recv(uint8 s,  uint8 *addr, uint16_t rlen);
 void do_ping(void);
+void ping_listening(void);
+
 #endif
 

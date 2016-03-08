@@ -60,6 +60,7 @@ int main(void)
     printf("\r\n Ping Test \r\n");
     while(1)
     {
+        ping_listening();
         LED2_TOGGLE;
         SysTick_Delay_ms(500);
 

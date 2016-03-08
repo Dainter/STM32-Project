@@ -11,11 +11,13 @@
 
 #define PING_DEBUG
 PINGMSGR PingRequest;    
-PINGMSGR PingReply;    
+  
 
 static uint16 RandomID = 0x1234; 
 static uint16 RandomSeqNum = 0x4321;
 uint8 ping_reply_received = 0; 
+uint8 ping_request_received = 0; 
+
 uint8 req=0;
 uint8 rep=0;
 
@@ -53,7 +55,7 @@ void ping_auto(uint8 s, uint8 *addr)
                 {   
                     if ( (len = getSn_RX_RSR(s) ) > 0)
                     {
-                        ping_reply(s, addr, len);                                               /*获取回复信息*/
+                        ping_reply_recv(s, addr, len);                                               /*获取回复信息*/
                         rep++;
                         break;
                     }
@@ -136,7 +138,7 @@ void ping_count(uint8 s, uint16 pCount, uint8 *addr)
                 {
                     if ( (rlen = getSn_RX_RSR(s) ) > 0)
                     {
-                        ping_reply(s, addr, rlen);                                          /*获取回复信息*/
+                        ping_reply_recv(s, addr, rlen);                                          /*获取回复信息*/
                         rep++;
                         if (ping_reply_received)  break;                
                     }       
@@ -205,12 +207,52 @@ uint8 ping_request(uint8 s, uint8 *addr)
 } 
 
 /**
+*@brief     Ping回复
+*@param     s-  socket number
+*@param     addr- Ping地址
+*@return    无
+*/
+uint8 ping_reply(uint8 s, uint8 *addr)
+{
+    uint16 i;
+    PINGMSGR PingReply;  
+    
+    ping_request_received = 0;                                        /*ping 请求标志位清0*/
+    PingReply.Type = PING_REPLY;                                /*Ping-Reply*/
+    PingReply.Code = CODE_ZERO;                                       /*总是 '0'*/
+    PingReply.ID = htons(RandomID++);                                     /*设置ping响应ID为随机的整型变量*/
+    PingReply.SeqNum =htons(RandomSeqNum++);                              /*设置ping响应的序列号为随机整形变量*/
+    for(i = 0 ; i < BUF_LEN; i++)
+    {                                   
+        PingReply.Data[i] = (i) % 8;                                                  /*ping相应的数在'0'~'8‘*/
+    }
+    PingReply.CheckSum = 0;
+    /* 计算响应次数*/
+    PingReply.CheckSum = htons(checksum((uint8*)&PingReply,sizeof(PingReply))); 
+    /*发送ping响应到目的方 */
+    if(sendto(s,(uint8 *)&PingReply,sizeof(PingReply),addr,3000)==0)    
+    {  
+        printf( "\r\n Fail to send ping-reply packet  r\n") ;                   
+    }
+    else
+    {
+        printf( "Send Ping Request  to Destination (") ;                    
+        printf( "%d.%d.%d.%d )",   (addr[0]),  (addr[1]),  (addr[2]),  (addr[3])) ;
+        printf( " ID:%x  SeqNum:%x CheckSum:%x\r\n",   htons(PingReply.ID),  htons(PingReply.SeqNum),  htons(PingReply.CheckSum)) ;
+    }
+
+    return 0;
+}
+
+
+
+/**
 *@brief     解析Ping回复
 *@param     s-  socket number
 *@param     addr- Ping地址
 *@return    无
 */
-uint8 ping_reply(uint8 s, uint8 *addr,  uint16 rlen)
+uint8 ping_reply_recv(uint8 s, uint8 *addr,  uint16 rlen)
 {
     uint16 tmp_checksum;
     uint16 len;
@@ -232,7 +274,7 @@ uint8 ping_reply(uint8 s, uint8 *addr,  uint16 rlen)
         {
             PingReply.Data[i] = data_buf[8+i];
         }
-        tmp_checksum = ~checksum(data_buf,len);                                 /*检查ping回复的次数*/
+        tmp_checksum = ~(checksum(data_buf,len));                                 /*检查ping回复的次数*/
         if(tmp_checksum != 0xffff)
             printf("tmp_checksum = %x\r\n",tmp_checksum);
         else
@@ -264,7 +306,7 @@ uint8 ping_reply(uint8 s, uint8 *addr,  uint16 rlen)
         {       }
         printf("Request from %d.%d.%d.%d  ID:%x SeqNum:%x  :data size %d bytes\r\n",
         (addr[0]),  (addr[1]),  (addr[2]),  (addr[3]),  (PingReply.ID),  (PingReply.SeqNum),  (rlen+6) );      
-        ping_reply_received =1;                                                                 /* 当退出ping回复循环时，设置ping回复标志为1    */
+        ping_request_received =1;                                                                 /* 当退出ping回复循环时，设置ping回复标志为1    */
     }
     else
     {      
@@ -286,6 +328,44 @@ void do_ping(void)
     //   while(1);
 }
 
+/**
+*@brief     监听ping请求并响应
+*@param     无
+*@return    无
+*/
+void ping_listening(void)
+{
+    uint16 len;
+    uint8 s = SOCK_PING; 
+    uint8 *addr = remote_ip;
+    uint8 cnt=0;
+
+    while(1)
+    {   
+        if ( (len = getSn_RX_RSR(s) ) > 0)
+        {
+            ping_reply_recv(s, addr, len);                                               /*获取回复信息*/
+            rep++;
+            break;
+        }
+        else if(cnt > 10)
+        {
+            cnt = 0;
+            break;
+        }
+        else
+        {
+            cnt++;
+            delay_ms(50); // wait 50ms
+        }
+        // wait_time for 2 seconds, Break on fail
+    }
+    if(ping_request_received == 1)
+    {
+        //ping reply
+        ping_reply(s, addr);
+    }
+}
 
 
 
