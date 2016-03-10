@@ -19,9 +19,6 @@
 #define             macUSART_TX_PIN                          GPIO_Pin_9
 #define             macUSART_RX_PORT                         GPIOA 
 #define             macUSART_RX_PIN                          GPIO_Pin_10
-#define             macUSART_IRQ                             USART1_IRQn
-#define             macUSART_INT_FUN                         USART1_IRQHandler
-
 
 
 void                USARTx_Config                           ( void );

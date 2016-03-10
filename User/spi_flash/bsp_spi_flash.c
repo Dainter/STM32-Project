@@ -46,6 +46,10 @@
 
 static volatile DSTATUS FATFS_FLASH_SPI_Stat = STA_NOINIT;  /* Physical drive status */
 
+
+//#include "bsp_spi_flash.h"
+//#include "ff.h"
+
 //FIL fnew;                             /* file objects */
 //FATFS fs;                             /* Work area (file system object) for logical drives */
 //FRESULT res_flash; 

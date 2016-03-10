@@ -26,10 +26,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include <stdio.h>
+#include <string.h>
 #include "bsp_usart1.h"
 #include "bsp_SysTick.h"
 #include "w5500_conf.h"
 
+
+extern volatile uint8_t ucTcpClosedFlag;
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -159,7 +162,7 @@ void TIM2_IRQHandler(void)
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f10x_xx.s).                                            */
 /******************************************************************************/
-void macUSART_INT_FUN(void)
+void USART1_IRQHandler(void)
 {
     uint8_t ch;
     
@@ -171,6 +174,41 @@ void macUSART_INT_FUN(void)
     } 
      
 }
+
+/**
+  * @brief  This function handles macESP8266_USARTx Handler.
+  * @param  None
+  * @retval None
+  */
+void USART3_IRQHandler( void )
+{   
+//    uint8_t ucCh;
+//    
+//    if ( USART_GetITStatus ( macESP8266_USARTx, USART_IT_RXNE ) != RESET )
+//    {
+//        ucCh  = USART_ReceiveData( macESP8266_USARTx );
+//        printf( "%c", ucCh );
+//        if ( strEsp8266_Fram_Record .InfBit .FramLength < ( RX_BUF_MAX_LEN - 1 ) )                       //预留1个字节写结束符
+//            strEsp8266_Fram_Record .Data_RX_BUF [ strEsp8266_Fram_Record .InfBit .FramLength ++ ]  = ucCh;
+
+//    }
+//         
+//    if ( USART_GetITStatus( macESP8266_USARTx, USART_IT_IDLE ) == SET )                                         //数据帧接收完毕
+//    {
+//        strEsp8266_Fram_Record .InfBit .FramFinishFlag = 1;
+//        
+//        ucCh = USART_ReceiveData( macESP8266_USARTx );                                                              //由软件序列清除中断标志位(先读USART_SR，然后读USART_DR)
+//    
+//        ucTcpClosedFlag = strstr ( strEsp8266_Fram_Record .Data_RX_BUF, "CLOSED\r\n" ) ? 1 : 0;
+//        if(ucTcpClosedFlag == 1)
+//        {
+//            strEsp8266_Fram_Record .Data_RX_BUF [ strEsp8266_Fram_Record .InfBit .FramLength]  = 0;
+//            printf( "%s", strEsp8266_Fram_Record .Data_RX_BUF);
+//        }
+//  } 
+
+}
+
 
 /**
   * @brief  This function handles PPP interrupt request.

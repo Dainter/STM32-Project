@@ -370,7 +370,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Lib\CMSIS;..\..\Lib\FWLIB\inc;..\..\User;..\..\User\Led;..\..\User\SysTick;..\..\User\usart;..\..\User\spi_flash;..\..\User\ff\src;..\..\User\Ethernet\W5500;..\..\User\Ethernet\Internet;..\..\User\TimBase</IncludePath>
+              <IncludePath>..\..\Lib\CMSIS;..\..\Lib\FWLIB\inc;..\..\User;..\..\User\Led;..\..\User\SysTick;..\..\User\usart;..\..\User\spi_flash;..\..\User\ff\src;..\..\User\Ethernet\W5500;..\..\User\Ethernet\Internet;..\..\User\TimBase;..\..\User\ESP8266</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

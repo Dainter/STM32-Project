@@ -21,6 +21,8 @@ uint8 ping_request_received = 0;
 uint8 req=0;
 uint8 rep=0;
 
+
+
 /**
 *@brief     自动PING外网IP函数
 *@param     s；socket number

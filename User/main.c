@@ -19,13 +19,7 @@
 #include "bsp_SysTick.h"
 #include "bsp_led.h"
 #include "bsp_usart1.h"
-#include "bsp_spi_flash.h"
-#include "ff.h"
-#include "w5500_conf.h"
-#include "ping.h"
-#include "dhcp.h"
-#include "tcp_demo.h"
-#include "udp_demo.h"
+
 
 
 /**
@@ -44,31 +38,12 @@ int main(void)
     USARTx_Config();
     printf("\r\n usart_ok \r\n");   
 
-    gpio_for_w5500_config();                                /*初始化MCU相关引脚*/
-    printf("\r\n w5500_ok \r\n");
-    reset_w5500();                                          /*硬复位W5500*/
-    printf("\r\n Reset_w5500_ok \r\n");
-    set_w5500_mac();                                        /*配置MAC地址*/
-    //ip_from = IP_FROM_DEFINE;
-    //set_w5500_ip();                                         /*配置IP地址*/
-    //printf("\r\n Network_ok \r\n");
-    socket_buf_init(txsize, rxsize);        /*初始化8个Socket的发送接收缓存大小*/
-    printf("\r\n Socket_ok \r\n");
-    while(dhcp_ok != 1)
-    {
-        do_dhcp();
-    }
-    do_ping();
-    printf("\r\n Ping Test \r\n");
     while(1)
     {
-        ping_listening();
-        //do_tcp_server();
-        do_udp();
         LED2_TOGGLE;
         SysTick_Delay_ms(500);
-
     }     
     
 }
+
 /*********************************************END OF FILE**********************/
