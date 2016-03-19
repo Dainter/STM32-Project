@@ -51,7 +51,9 @@
 */
 
 static  OS_TCB   AppTaskStartTCB;
-
+static  OS_TCB   AppTaskLED1TCB;
+static  OS_TCB   AppTaskLED2TCB;
+static  OS_TCB   AppTaskLED3TCB;
 
 /*
 *********************************************************************************************************
@@ -60,7 +62,9 @@ static  OS_TCB   AppTaskStartTCB;
 */
 
 static  CPU_STK  AppTaskStartStk[APP_TASK_START_STK_SIZE];
-
+static  CPU_STK  AppTaskLED1Stk[APP_TASK_LED1_STK_SIZE];
+static  CPU_STK  AppTaskLED2Stk[APP_TASK_LED2_STK_SIZE];
+static  CPU_STK  AppTaskLED3Stk[APP_TASK_LED3_STK_SIZE];
 
 /*
 *********************************************************************************************************
@@ -69,7 +73,9 @@ static  CPU_STK  AppTaskStartStk[APP_TASK_START_STK_SIZE];
 */
 
 static  void  AppTaskStart  (void *p_arg);
-
+static  void  AppTaskLED1  (void *p_arg);
+static  void  AppTaskLED2  (void *p_arg);
+static  void  AppTaskLED3  (void *p_arg);
 
 /*
 *********************************************************************************************************
@@ -149,16 +155,136 @@ static  void  AppTaskStart (void *p_arg)
 
     CPU_IntDisMeasMaxCurReset();
 
+    OSTaskCreate((OS_TCB     *)&AppTaskLED1TCB,                /* Create the LED1 task                                */
+             (CPU_CHAR   *)"App Task LED1",
+             (OS_TASK_PTR ) AppTaskLED1,
+             (void       *) 0,
+             (OS_PRIO     ) APP_TASK_LED1_PRIO,
+             (CPU_STK    *)&AppTaskLED1Stk[0],
+             (CPU_STK_SIZE) APP_TASK_LED1_STK_SIZE / 10,
+             (CPU_STK_SIZE) APP_TASK_LED1_STK_SIZE,
+             (OS_MSG_QTY  ) 5u,
+             (OS_TICK     ) 0u,
+             (void       *) 0,
+             (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+             (OS_ERR     *)&err);
+             
+    OSTaskCreate((OS_TCB     *)&AppTaskLED2TCB,                /* Create the LED2 task                                */
+             (CPU_CHAR   *)"App Task LED2",
+             (OS_TASK_PTR ) AppTaskLED2,
+             (void       *) 0,
+             (OS_PRIO     ) APP_TASK_LED2_PRIO,
+             (CPU_STK    *)&AppTaskLED2Stk[0],
+             (CPU_STK_SIZE) APP_TASK_LED2_STK_SIZE / 10,
+             (CPU_STK_SIZE) APP_TASK_LED2_STK_SIZE,
+             (OS_MSG_QTY  ) 5u,
+             (OS_TICK     ) 0u,
+             (void       *) 0,
+             (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+             (OS_ERR     *)&err);
+             
+    OSTaskCreate((OS_TCB     *)&AppTaskLED3TCB,                /* Create the LED3 task                                */
+             (CPU_CHAR   *)"App Task LED3",
+             (OS_TASK_PTR ) AppTaskLED3,
+             (void       *) 0,
+             (OS_PRIO     ) APP_TASK_LED3_PRIO,
+             (CPU_STK    *)&AppTaskLED3Stk[0],
+             (CPU_STK_SIZE) APP_TASK_LED3_STK_SIZE / 10,
+             (CPU_STK_SIZE) APP_TASK_LED3_STK_SIZE,
+             (OS_MSG_QTY  ) 5u,
+             (OS_TICK     ) 0u,
+             (void       *) 0,
+             (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+             (OS_ERR     *)&err);
+    OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
+             (OS_ERR     *)&err);
+}
+/*
+*********************************************************************************************************
+*                                          LED1 TASK
+*
+* Description : 
+*
+* Arguments   : p_arg   is the argument passed to 'AppTaskStart()' by 'OSTaskCreate()'.
+*
+* Returns     : none
+*
+* Notes       : 
+*********************************************************************************************************
+*/
+
+static  void  AppTaskLED1 (void *p_arg)
+{
+    OS_ERR      err;
+
+
+   (void)p_arg;
+
+
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
-        LED2_TOGGLE;
-        OSTimeDly(500,
-                  OS_OPT_TIME_DLY,
-                  &err);
-        LED3_TOGGLE;
+        LED1_TOGGLE;
         OSTimeDly(500,
                   OS_OPT_TIME_DLY,
                   &err);
     }
 }
 
+/*
+*********************************************************************************************************
+*                                          LED2 TASK
+*
+* Description : 
+*
+* Arguments   : p_arg   is the argument passed to 'AppTaskStart()' by 'OSTaskCreate()'.
+*
+* Returns     : none
+*
+* Notes       : 
+*********************************************************************************************************
+*/
 
+static  void  AppTaskLED2 (void *p_arg)
+{
+    OS_ERR      err;
+
+
+   (void)p_arg;
+
+
+    while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        LED2_TOGGLE;
+        OSTimeDly(1000,
+                  OS_OPT_TIME_DLY,
+                  &err);
+    }
+}
+
+/*
+*********************************************************************************************************
+*                                          LED3 TASK
+*
+* Description : 
+*
+* Arguments   : p_arg   is the argument passed to 'AppTaskStart()' by 'OSTaskCreate()'.
+*
+* Returns     : none
+*
+* Notes       : 
+*********************************************************************************************************
+*/
+
+static  void  AppTaskLED3 (void *p_arg)
+{
+    OS_ERR      err;
+
+
+   (void)p_arg;
+
+
+    while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        LED3_TOGGLE;
+        OSTimeDly(2000,
+                  OS_OPT_TIME_DLY,
+                  &err);
+    }
+}
