@@ -29,7 +29,6 @@
 #include <string.h>
 #include "bsp_usart1.h"
 #include "bsp_SysTick.h"
-#include "w5500_conf.h"
 
 
 extern volatile uint8_t ucTcpClosedFlag;
@@ -148,14 +147,14 @@ void SysTick_Handler(void)
 }
 
 
-void TIM2_IRQHandler(void)
-{
-    if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
-    {   
-        timer2_isr();
-        TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);           
-    }           
-}
+//void TIM2_IRQHandler(void)
+//{
+//    if ( TIM_GetITStatus(TIM2 , TIM_IT_Update) != RESET ) 
+//    {   
+//        timer2_isr();
+//        TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update);           
+//    }           
+//}
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
