@@ -96,7 +96,7 @@ int  main (void)
 
 
     OSInit(&err);                                               /* Init uC/OS-III.                                      */
-
+    
     OSTaskCreate((OS_TCB     *)&AppTaskStartTCB,                /* Create the start task                                */
                  (CPU_CHAR   *)"App Task Start",
                  (OS_TASK_PTR ) AppTaskStart,
@@ -154,7 +154,7 @@ static  void  AppTaskStart (void *p_arg)
 #endif
 
     CPU_IntDisMeasMaxCurReset();
-
+    printf("App Task LED1 Create.\n");
     OSTaskCreate((OS_TCB     *)&AppTaskLED1TCB,                /* Create the LED1 task                                */
              (CPU_CHAR   *)"App Task LED1",
              (OS_TASK_PTR ) AppTaskLED1,
@@ -168,7 +168,8 @@ static  void  AppTaskStart (void *p_arg)
              (void       *) 0,
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
-             
+    
+    printf("App Task LED2 Create.\n");         
     OSTaskCreate((OS_TCB     *)&AppTaskLED2TCB,                /* Create the LED2 task                                */
              (CPU_CHAR   *)"App Task LED2",
              (OS_TASK_PTR ) AppTaskLED2,
@@ -183,6 +184,7 @@ static  void  AppTaskStart (void *p_arg)
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
              
+    printf("App Task LED3 Create.\n");
     OSTaskCreate((OS_TCB     *)&AppTaskLED3TCB,                /* Create the LED3 task                                */
              (CPU_CHAR   *)"App Task LED3",
              (OS_TASK_PTR ) AppTaskLED3,
@@ -198,6 +200,7 @@ static  void  AppTaskStart (void *p_arg)
              (OS_ERR     *)&err);
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
+    printf("App Task Start Delete.\n");
 }
 /*
 *********************************************************************************************************
@@ -276,13 +279,15 @@ static  void  AppTaskLED2 (void *p_arg)
 static  void  AppTaskLED3 (void *p_arg)
 {
     OS_ERR      err;
-
+    OS_TICK     tick;
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
         LED3_TOGGLE;
+        tick = OSTimeGet(&err);
+        printf("Tick Now = %d\n", tick);
         OSTimeDly(2000,
                   OS_OPT_TIME_DLY,
                   &err);

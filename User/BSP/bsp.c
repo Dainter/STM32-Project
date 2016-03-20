@@ -159,12 +159,11 @@ CPU_INT32U  BSP_CPU_ClkFreq_MHz;
 
 void  BSP_Init (void)
 {
-    LED_GPIO_Config();
-    /* 配置SysTick 为10us中断一次 */
-    SysTick_Init();
+    LED_GPIO_Config();  
     /* USART1 配置模式为 115200 8-N-1，中断接收 */
     USARTx_Config();
-    printf("\r\n usart_ok \r\n");   
+    printf("USART_OK.\r\n"); 
+    
 }
 
 

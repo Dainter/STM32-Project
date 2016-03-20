@@ -75,7 +75,6 @@
 
 #include  <app_cfg.h>
 
-#include "bsp_SysTick.h"
 #include "bsp_led.h"
 #include "bsp_usart1.h"
 

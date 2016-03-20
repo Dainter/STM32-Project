@@ -654,11 +654,6 @@
               <FilePath>..\..\User\BSP\Led\bsp_led.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_SysTick.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\BSP\SysTick\bsp_SysTick.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_usart1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\BSP\usart\bsp_usart1.c</FilePath>
