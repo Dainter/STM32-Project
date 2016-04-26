@@ -202,6 +202,52 @@ static  void  AppTaskStart (void *p_arg)
              (OS_ERR     *)&err);
     printf("App Task Start Delete.\n");
 }
+
+/*
+*********************************************************************************************************
+*                                          TimerCallBack 
+*
+* Description : 
+*
+* Arguments   : p_arg   is the argument passed to 'AppTaskStart()' by 'OSTaskCreate()'.
+*
+* Returns     : none
+*
+* Notes       : 
+*********************************************************************************************************
+*/
+
+void  TimerCallBack (OS_TMR *p_tmr, void *p_arg)
+{
+    OS_ERR      err;
+    OS_TICK  tickCount = OSTimeGet ((OS_ERR  *)&err);
+
+    (void)p_arg;
+    printf("TimerCallBack enter, tickCount = %d\n", tickCount);
+    if(tickCount < 20000)
+    {
+        return;
+    }
+    if(OSTmrStop ((OS_TMR  *)p_tmr,
+               (OS_OPT   )OS_OPT_TMR_NONE,
+               (void    *)p_arg,
+               (OS_ERR  *)&err) != DEF_TRUE)
+    {
+        printf("Stop Timer Failed, err = %d\n", err);
+        return;
+    }
+    printf("Timer Stopped Successfully.\n");
+    if(OSTmrDel ((OS_TMR  *)p_tmr,
+              (OS_ERR  *)&err) != DEF_TRUE)
+    {
+        printf("Delete Timer Failed, err = %d\n", err);
+        return;
+    }
+    printf("Timer Deleted Successfully.\n");
+    
+}
+
+
 /*
 *********************************************************************************************************
 *                                          LED1 TASK
@@ -219,9 +265,28 @@ static  void  AppTaskStart (void *p_arg)
 static  void  AppTaskLED1 (void *p_arg)
 {
     OS_ERR      err;
-
+    OS_TMR      my_tmr;
 
    (void)p_arg;
+
+    OSTmrCreate ((OS_TMR               *)&my_tmr,
+                   (CPU_CHAR             *)"my_timer",
+                   (OS_TICK               )10,
+                   (OS_TICK               )10,
+                   (OS_OPT                )OS_OPT_TMR_PERIODIC,
+                   (OS_TMR_CALLBACK_PTR   )TimerCallBack,
+                   (void                 *)p_arg,
+                   (OS_ERR               *)err);
+    if(err == OS_ERR_NONE)
+    {
+        printf("Timer Created Successfully.\n");
+        OSTmrStart ((OS_TMR               *)&my_tmr,
+                    (OS_ERR               *)err);
+    }
+    else
+    {
+        printf("Timer Create Failed.\n");
+    }
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
@@ -279,15 +344,12 @@ static  void  AppTaskLED2 (void *p_arg)
 static  void  AppTaskLED3 (void *p_arg)
 {
     OS_ERR      err;
-    OS_TICK     tick;
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
         LED3_TOGGLE;
-        tick = OSTimeGet(&err);
-        printf("Tick Now = %d\n", tick);
         OSTimeDly(2000,
                   OS_OPT_TIME_DLY,
                   &err);
