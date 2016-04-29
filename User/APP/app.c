@@ -43,6 +43,7 @@
 *                                            LOCAL DEFINES
 *********************************************************************************************************
 */
+OS_MUTEX    washing;
 
 /*
 *********************************************************************************************************
@@ -198,6 +199,12 @@ static  void  AppTaskStart (void *p_arg)
              (void       *) 0,
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
+
+    OSMutexCreate ((OS_MUTEX  *)&washing,
+                 (CPU_CHAR  *)"Washing_Machine",
+                 (OS_ERR     *)&err);
+
+             
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
     printf("App Task Start Delete.\n");
@@ -219,16 +226,51 @@ static  void  AppTaskStart (void *p_arg)
 static  void  AppTaskLED1 (void *p_arg)
 {
     OS_ERR      err;
-
+    CPU_SR_ALLOC();
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        OS_CRITICAL_ENTER();
+        printf("LED1 wait for washing machine.\n");
+        OS_CRITICAL_ENTER_CPU_EXIT();
+        OSMutexPend ((OS_MUTEX  *)&washing,
+                   (OS_TICK    )0,
+                   (OS_OPT     )OS_OPT_PEND_BLOCKING,
+                   (CPU_TS    *)0,
+                   (OS_ERR    *)err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED1 get washing machine.\n");
+        }
+        else
+        {
+            printf("LED1 doesn't get washing machine. err = %d\n", err);
+        }
+        OS_CRITICAL_ENTER_CPU_EXIT();
+        
         LED1_TOGGLE;
         OSTimeDly(500,
                   OS_OPT_TIME_DLY,
                   &err);
+        LED1_TOGGLE;
+
+        
+        OSMutexPost ((OS_MUTEX  *)&washing,
+                   (OS_OPT     )OS_OPT_POST_NONE,
+                   (OS_ERR    *)err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED1 release washing machine.\n");
+        }
+        else
+        {
+            printf("LED1 release washing machine with error = %d.\n",err);
+        }
+        OS_CRITICAL_ENTER_CPU_EXIT();
     }
 }
 
@@ -249,16 +291,50 @@ static  void  AppTaskLED1 (void *p_arg)
 static  void  AppTaskLED2 (void *p_arg)
 {
     OS_ERR      err;
-
+    CPU_SR_ALLOC();
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        OS_CRITICAL_ENTER();
+        printf("LED2 wait for washing machine.\n");
+        OS_CRITICAL_ENTER_CPU_EXIT();
+        OSMutexPend ((OS_MUTEX  *)&washing,
+                   (OS_TICK    )0,
+                   (OS_OPT     )OS_OPT_PEND_BLOCKING,
+                   (CPU_TS    *)0,
+                   (OS_ERR    *)err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED2 get washing machine.\n");
+        }
+        else
+        {
+            printf("LED2 doesn't get washing machine. err = %d\n", err);
+        }
+        OS_CRITICAL_ENTER_CPU_EXIT();
+        
         LED2_TOGGLE;
         OSTimeDly(1000,
                   OS_OPT_TIME_DLY,
                   &err);
+        LED2_TOGGLE;
+
+        OSMutexPost ((OS_MUTEX  *)&washing,
+                   (OS_OPT     )OS_OPT_POST_NONE,
+                   (OS_ERR    *)err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED2 release washing machine.\n");
+        }
+        else
+        {
+            printf("LED2 release washing machine with error = %d.\n",err);
+        }
+        OS_CRITICAL_ENTER_CPU_EXIT();
     }
 }
 
@@ -279,17 +355,49 @@ static  void  AppTaskLED2 (void *p_arg)
 static  void  AppTaskLED3 (void *p_arg)
 {
     OS_ERR      err;
-    OS_TICK     tick;
+    CPU_SR_ALLOC();
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        OS_CRITICAL_ENTER();
+        printf("LED3 wait for washing machine.\n");
+        OS_CRITICAL_ENTER_CPU_EXIT();
+        OSMutexPend ((OS_MUTEX  *)&washing,
+                   (OS_TICK    )0,
+                   (OS_OPT     )OS_OPT_PEND_BLOCKING,
+                   (CPU_TS    *)0,
+                   (OS_ERR    *)err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED3 get washing machine.\n");
+        }
+        else
+        {
+            printf("LED3 doesn't get washing machine. err = %d\n", err);
+        }
+        OS_CRITICAL_ENTER_CPU_EXIT();
+        
         LED3_TOGGLE;
-        tick = OSTimeGet(&err);
-        printf("Tick Now = %d\n", tick);
         OSTimeDly(2000,
                   OS_OPT_TIME_DLY,
                   &err);
+        LED3_TOGGLE;
+
+        OSMutexPost ((OS_MUTEX  *)&washing,
+                   (OS_OPT     )OS_OPT_POST_NONE,
+                   (OS_ERR    *)err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED3 release washing machine.\n");
+        }
+        else
+        {
+            printf("LED3 release washing machine with error = %d.\n",err);
+        }
+        OS_CRITICAL_ENTER_CPU_EXIT();
     }
 }
