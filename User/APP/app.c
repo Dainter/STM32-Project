@@ -206,10 +206,10 @@ static  void  AppTaskStart (void *p_arg)
                 (OS_ERR     *)&err);
 
 
-             
+    printf("App Task Start Delete.\n");         
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
-    printf("App Task Start Delete.\n");
+    
 }
 /*
 *********************************************************************************************************
@@ -253,10 +253,15 @@ static  void  AppTaskLED1 (void *p_arg)
             printf("LED1 dosen't Get SEM. err = %d\n", err);
         }
         OS_CRITICAL_EXIT();
+				
         LED1_TOGGLE;
-
+        OSTimeDly(500,
+                  OS_OPT_TIME_DLY,
+                  &err);
+				LED1_TOGGLE;
+				
         ctr = OSSemPost ((OS_SEM  *)&print_flag,
-                        (OS_OPT   )OS_OPT_POST_ALL,
+                        (OS_OPT   )OS_OPT_POST_1,
                         (OS_ERR     *)&err);
         OS_CRITICAL_ENTER();
         if(err == OS_ERR_NONE)
@@ -267,11 +272,7 @@ static  void  AppTaskLED1 (void *p_arg)
         {
             printf("LED1 dosen't Post SEM. err = %d\n", err);
         }
-        OS_CRITICAL_EXIT();
-        OSTimeDly(500,
-                  OS_OPT_TIME_DLY,
-                  &err);
-                  
+        OS_CRITICAL_EXIT();     
     }
 }
 
@@ -317,10 +318,15 @@ static  void  AppTaskLED2 (void *p_arg)
             printf("LED2 dosen't Get SEM. err = %d\n", err);
         }
 				OS_CRITICAL_EXIT();
+				
         LED2_TOGGLE;
-
+        OSTimeDly(1000,
+                  OS_OPT_TIME_DLY,
+                  &err);
+				LED2_TOGGLE;
+				
         ctr = OSSemPost ((OS_SEM  *)&print_flag,
-                        (OS_OPT   )OS_OPT_POST_ALL,
+                        (OS_OPT   )OS_OPT_POST_1,
                         (OS_ERR     *)&err);
 				OS_CRITICAL_ENTER();
         if(err == OS_ERR_NONE)
@@ -332,9 +338,6 @@ static  void  AppTaskLED2 (void *p_arg)
             printf("LED2 dosen't Post SEM. err = %d\n", err);
         }
 				OS_CRITICAL_EXIT();
-        OSTimeDly(1000,
-                  OS_OPT_TIME_DLY,
-                  &err);
     }
 }
 
@@ -380,10 +383,15 @@ static  void  AppTaskLED3 (void *p_arg)
             printf("LED3 dosen't Get SEM. err = %d\n", err);
         }
 				OS_CRITICAL_EXIT();
+				
         LED3_TOGGLE;
-
+        OSTimeDly(2000,
+                  OS_OPT_TIME_DLY,
+                  &err);
+				LED3_TOGGLE;
+				
         ctr = OSSemPost ((OS_SEM  *)&print_flag,
-                        (OS_OPT   )OS_OPT_POST_ALL,
+                        (OS_OPT   )OS_OPT_POST_1,
                         (OS_ERR     *)&err);
 				OS_CRITICAL_ENTER();
         if(err == OS_ERR_NONE)
@@ -395,8 +403,5 @@ static  void  AppTaskLED3 (void *p_arg)
             printf("LED3 dosen't Post SEM. err = %d\n", err);
         }
 				OS_CRITICAL_EXIT();
-        OSTimeDly(2000,
-                  OS_OPT_TIME_DLY,
-                  &err);
     }
 }
