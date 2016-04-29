@@ -43,6 +43,7 @@
 *                                            LOCAL DEFINES
 *********************************************************************************************************
 */
+OS_SEM  print_flag;
 
 /*
 *********************************************************************************************************
@@ -198,6 +199,14 @@ static  void  AppTaskStart (void *p_arg)
              (void       *) 0,
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
+
+    OSSemCreate ((OS_SEM      *)&print_flag,
+                (CPU_CHAR    *)"print_flag",
+                (OS_SEM_CTR   )2,
+                (OS_ERR     *)&err);
+
+
+             
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
     printf("App Task Start Delete.\n");
@@ -219,16 +228,50 @@ static  void  AppTaskStart (void *p_arg)
 static  void  AppTaskLED1 (void *p_arg)
 {
     OS_ERR      err;
-
+    OS_SEM_CTR  ctr;
+		CPU_SR_ALLOC();
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        OS_CRITICAL_ENTER();
+        printf("LED1 Wait for SEM.\n");
+        OS_CRITICAL_EXIT(); 
+        ctr = OSSemPend ((OS_SEM   *)&print_flag,               //等待该信号量 SemOfKey
+                        (OS_TICK   )0,                       //下面选择不等待，该参无效
+                        (OS_OPT    )OS_OPT_PEND_BLOCKING,//如果没信号量可用不等待
+                        (CPU_TS   *)0,                       //不获取时间戳
+                        (OS_ERR   *)&err);                   //返回错误类型
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED1 Get SEM. SEM ctr = %d\n", ctr);
+        }
+        else
+        {
+            printf("LED1 dosen't Get SEM. err = %d\n", err);
+        }
+        OS_CRITICAL_EXIT();
         LED1_TOGGLE;
+
+        ctr = OSSemPost ((OS_SEM  *)&print_flag,
+                        (OS_OPT   )OS_OPT_POST_ALL,
+                        (OS_ERR     *)&err);
+        OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED1 Post SEM. SEM ctr = %d\n", ctr);
+        }
+        else
+        {
+            printf("LED1 dosen't Post SEM. err = %d\n", err);
+        }
+        OS_CRITICAL_EXIT();
         OSTimeDly(500,
                   OS_OPT_TIME_DLY,
                   &err);
+                  
     }
 }
 
@@ -249,13 +292,46 @@ static  void  AppTaskLED1 (void *p_arg)
 static  void  AppTaskLED2 (void *p_arg)
 {
     OS_ERR      err;
-
+    OS_SEM_CTR  ctr;
+		CPU_SR_ALLOC();
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        OS_CRITICAL_ENTER();
+				printf("LED2 Wait for SEM.\n");
+				OS_CRITICAL_EXIT();
+        ctr = OSSemPend ((OS_SEM   *)&print_flag,               //等待该信号量 SemOfKey
+                        (OS_TICK   )0,                       //下面选择不等待，该参无效
+                        (OS_OPT    )OS_OPT_PEND_BLOCKING,//如果没信号量可用不等待
+                        (CPU_TS   *)0,                       //不获取时间戳
+                        (OS_ERR   *)&err);                   //返回错误类型
+				OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED2 Get SEM. SEM ctr = %d\n", ctr);
+        }
+        else
+        {
+            printf("LED2 dosen't Get SEM. err = %d\n", err);
+        }
+				OS_CRITICAL_EXIT();
         LED2_TOGGLE;
+
+        ctr = OSSemPost ((OS_SEM  *)&print_flag,
+                        (OS_OPT   )OS_OPT_POST_ALL,
+                        (OS_ERR     *)&err);
+				OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED2 Post SEM. SEM ctr = %d\n", ctr);
+        }
+        else
+        {
+            printf("LED2 dosen't Post SEM. err = %d\n", err);
+        }
+				OS_CRITICAL_EXIT();
         OSTimeDly(1000,
                   OS_OPT_TIME_DLY,
                   &err);
@@ -279,15 +355,46 @@ static  void  AppTaskLED2 (void *p_arg)
 static  void  AppTaskLED3 (void *p_arg)
 {
     OS_ERR      err;
-    OS_TICK     tick;
+    OS_SEM_CTR  ctr;
+		CPU_SR_ALLOC();
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        OS_CRITICAL_ENTER();
+				printf("LED3 Wait for SEM.\n");
+				OS_CRITICAL_EXIT();
+        ctr = OSSemPend ((OS_SEM   *)&print_flag,               //等待该信号量 SemOfKey
+                        (OS_TICK   )0,                       //下面选择不等待，该参无效
+                        (OS_OPT    )OS_OPT_PEND_BLOCKING,//如果没信号量可用不等待
+                        (CPU_TS   *)0,                       //不获取时间戳
+                        (OS_ERR   *)&err);                   //返回错误类型
+        OS_CRITICAL_ENTER();
+				if(err == OS_ERR_NONE)
+        {
+            printf("LED3 Get SEM. SEM ctr = %d\n", ctr);
+        }
+        else
+        {
+            printf("LED3 dosen't Get SEM. err = %d\n", err);
+        }
+				OS_CRITICAL_EXIT();
         LED3_TOGGLE;
-        tick = OSTimeGet(&err);
-        printf("Tick Now = %d\n", tick);
+
+        ctr = OSSemPost ((OS_SEM  *)&print_flag,
+                        (OS_OPT   )OS_OPT_POST_ALL,
+                        (OS_ERR     *)&err);
+				OS_CRITICAL_ENTER();
+        if(err == OS_ERR_NONE)
+        {
+            printf("LED3 Post SEM. SEM ctr = %d\n", ctr);
+        }
+        else
+        {
+            printf("LED3 dosen't Post SEM. err = %d\n", err);
+        }
+				OS_CRITICAL_EXIT();
         OSTimeDly(2000,
                   OS_OPT_TIME_DLY,
                   &err);
