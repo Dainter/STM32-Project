@@ -198,9 +198,10 @@ static  void  AppTaskStart (void *p_arg)
              (void       *) 0,
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
+
+    printf("App Task Start Delete.\n");
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
-    printf("App Task Start Delete.\n");
 }
 /*
 *********************************************************************************************************
