@@ -43,7 +43,7 @@
 *                                            LOCAL DEFINES
 *********************************************************************************************************
 */
-
+OS_Q        message;
 /*
 *********************************************************************************************************
 *                                                 TCB
@@ -198,9 +198,14 @@ static  void  AppTaskStart (void *p_arg)
              (void       *) 0,
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
+    OSQCreate ((OS_Q        *)&message,
+                 (CPU_CHAR    *)"message",
+                 (OS_MSG_QTY   )5,
+                 (OS_ERR     *)&err);
+    printf("App Task Start Delete.\n");
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
-    printf("App Task Start Delete.\n");
+    
 }
 /*
 *********************************************************************************************************
@@ -219,12 +224,23 @@ static  void  AppTaskStart (void *p_arg)
 static  void  AppTaskLED1 (void *p_arg)
 {
     OS_ERR      err;
-
+    char Mess[8] = {"Message0"};
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        LED1_TOGGLE;
+        OSTimeDly(500,
+                  OS_OPT_TIME_DLY,
+                  &err);
+        printf("Led1 post message %s, len = %d\n", Mess, sizeof(Mess));
+        OSQPost ((OS_Q        *)&message,
+               (void         *)Mess,
+               (OS_MSG_SIZE   )sizeof(Mess),
+               (OS_OPT        )OS_OPT_POST_FIFO,
+               (OS_ERR     *)&err);
+        Mess[7]++;
         LED1_TOGGLE;
         OSTimeDly(500,
                   OS_OPT_TIME_DLY,
@@ -249,12 +265,24 @@ static  void  AppTaskLED1 (void *p_arg)
 static  void  AppTaskLED2 (void *p_arg)
 {
     OS_ERR      err;
-
+    char *Mess;
+    unsigned  short messLen;
 
    (void)p_arg;
 
 
     while (DEF_TRUE) {                                          /* Task body, always written as an infinite loop.       */
+        LED2_TOGGLE;
+        OSTimeDly(1000,
+                  OS_OPT_TIME_DLY,
+                  &err);
+        Mess = OSQPend ((OS_Q         *)&message,
+                                    (OS_TICK       )0,
+                                    (OS_OPT        )OS_OPT_PEND_BLOCKING,
+                                    (OS_MSG_SIZE  *)&messLen,
+                                    (CPU_TS       *)0,
+                                    (OS_ERR       *)&err);
+        printf("Led2 received message %s, len = %d\n", Mess, messLen);
         LED2_TOGGLE;
         OSTimeDly(1000,
                   OS_OPT_TIME_DLY,
