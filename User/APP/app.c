@@ -135,8 +135,8 @@ static  void  AppTaskStart (void *p_arg)
 {
     CPU_INT32U  cpu_clk_freq;
     CPU_INT32U  cnts;
+    CPU_INT16U  version;
     OS_ERR      err;
-
 
    (void)p_arg;
 
@@ -199,6 +199,8 @@ static  void  AppTaskStart (void *p_arg)
              (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
              (OS_ERR     *)&err);
 
+    version = OSVersion ((OS_ERR     *)&err);
+    printf("uC/OS-III version = %d.\n", version);
     printf("App Task Start Delete.\n");
     OSTaskDel((OS_TCB     *)&AppTaskStartTCB,
              (OS_ERR     *)&err);
